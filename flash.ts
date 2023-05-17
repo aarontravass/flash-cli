@@ -39,8 +39,17 @@ await new Command()
     let folder: string
     if (!config.output) {
       const framework = await api.detectFramework()
-      folder = framework === 'Next.js' ? 'out' : '_site'
-      console.log(colors.cyan(`Detected framework: ${framework}`))
+      switch (framework) {
+        case 'Next.js':
+          folder = 'out'
+          break
+        case 'Lume':
+          folder = '_site'
+          break
+        default:
+          folder = '.'
+      }
+      console.log(colors.cyan(framework ? `Detected framework: ${framework}` : `Uploading static files`))
     } else folder = config.output
     if (config.storage === 'IPFS') {
       await api.deployToIpfs(folder)

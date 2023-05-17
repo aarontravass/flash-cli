@@ -11,13 +11,13 @@ export const dirData = async (
 ): Promise<[number, FileEntry[]]> => {
   let total = 0
   const files: FileEntry[] = []
-  for await (const { isFile, path } of walk(dir, { includeDirs: false })) {
+  for await (const { isFile, path } of walk(dir, { includeDirs: false, match: [/^[^.].*$/] })) {
     const size = (await Deno.stat(path)).size
     total += size
     const file = await Deno.open(path)
     if (isFile) {
       files.push({
-        name: path.replace(dir, ''),
+        name: dir === '.' ? path : path.replace(dir, ''),
         size,
         stream: () => readableStreamFromReader(file),
       })
@@ -33,10 +33,12 @@ const w3s = new NFTStorage({
 
 export const deployToIpfs = async (folder: string) => {
   const [total, files] = await dirData(folder)
+  if (total === 0) return console.error(colors.red(`Directory is empty`))
   console.log(colors.cyan('Deploying on IPFS 🌍'))
   console.log(colors.white('Pinning service: web3.storage 🛰️'))
   console.log(`Uploading ${format(total)}`)
   const then = performance.now()
+
   try {
     const result = await w3s.storeDirectory(files)
     console.log(`Deployed in ${((performance.now() - then) / 1000).toFixed(3)}s ✨`)
