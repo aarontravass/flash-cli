@@ -10,7 +10,7 @@ export const dirData = async (
   dir: string,
 ): Promise<[number, FileEntry[]]> => {
   let total = 0
-  let files: FileEntry[] = []
+  const files: FileEntry[] = []
   for await (const { isFile, path } of walk(dir, { includeDirs: false })) {
     const size = (await Deno.stat(path)).size
     total += size
