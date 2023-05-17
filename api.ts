@@ -2,7 +2,7 @@ import { colors, exists, format, NFTStorage, readableStreamFromReader, walk } fr
 
 export const detectFramework = async () => {
   if (await exists('_config.ts')) return 'Lume'
-  else if (await exists('.next')) return 'Next.js'
+  else if (await exists('.next') || await exists('next.config.js')) return 'Next.js'
 }
 type FileEntry = { name: string; size: number; stream: () => ReadableStream<Uint8Array> }
 
