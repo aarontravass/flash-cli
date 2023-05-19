@@ -1,27 +1,17 @@
 import kleur from 'kleur'
 import { NFTStorage } from 'nft.storage'
-import { access, constants,stat } from 'node:fs/promises'
+import { stat } from 'node:fs/promises'
 import { createReadStream } from 'node:fs'
-import { walk,fileSize } from './utils.js'
+import { fileSize, walk } from './utils.js'
 import { Readable } from 'node:stream'
-
-/**
- * @param {string} file
- * @returns
- */
-const exists = async (file) => {
-  try {
-    await access(file, constants.F_OK)
-    return true
-  } catch {
-    return false
-  }
-}
+import { exists } from './utils.js'
 
 export const detectFramework = async () => {
   if (await exists('_config.ts')) return 'Lume'
   else if (await exists('.next') || await exists('next.config.js')) {
     return 'Next.js'
+  } else if (await exists('.nuxt') || await exists('nuxt.config.ts')) {
+    return 'Nuxt.js'
   }
 }
 /**
@@ -41,11 +31,11 @@ export const dirData = async (
   ) {
     const size = (await stat(path)).size
     total += size
-      files.push({
-        name: dir === '.' ? path : path.replace(dir, ''),
-        size,
-        stream: () => Readable.toWeb(createReadStream(path)),
-      })
+    files.push({
+      name: dir === '.' ? path : path.replace(dir, ''),
+      size,
+      stream: () => Readable.toWeb(createReadStream(path)),
+    })
   }
   return [total, files]
 }
@@ -79,19 +69,19 @@ export const deployToIpfs = async (folder) => {
 
 /**
  * @param {string} framework
- * @param {string?} def 
+ * @param {string?} def
  */
-export const getOutputFolder =async (framework, def) => {
+export const getOutputFolder = async (framework, def) => {
   if (!def) {
     switch (framework) {
       case 'Next.js':
         return 'out'
-        break
       case 'Lume':
         return '_site'
+      case 'Nuxt.js':
+        return 'dist'
       default:
         return '.'
     }
-  }
-  else return def
+  } else return def
 }

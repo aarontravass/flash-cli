@@ -1,8 +1,9 @@
 import { cac } from 'cac'
 import prompts from 'prompts'
-import { readFile, writeFile } from 'node:fs/promises'
+import { readFile, writeFile,mkdir } from 'node:fs/promises'
 import kleur from 'kleur'
 import * as api from './api.js'
+import { exists } from './utils.js'
 
 /**
  * @param {string} file
@@ -63,5 +64,36 @@ cli
       await api.deployToIpfs(folder)
     }
   })
+
+cli.command('init [dir]', 'Initialize a new Flash project').action(
+  async (dir) => {
+    if (dir) {
+       await mkdir(dir)
+       process.chdir(dir)
+    }
+    if (await exists('.flashrc')) {
+      return console.error(kleur.red('Project is already initialized'))
+    }
+
+    const result = await prompts([
+      {
+        name: 'storage',
+        message: 'Storage Provider',
+        type: 'select',
+        choices: [{
+          title: 'IPFS',
+          value: 'ipfs',
+        }, {
+          title: 'Arweave (coming soon)',
+          value: 'arweave',
+          disabled: true,
+        }],
+      },
+    ])
+
+    await writeTextFile('.flashrc', JSON.stringify(result, null, 2))
+    console.log(kleur.cyan('✅ Successfully initialized new project'))
+  },
+)
 cli.help()
 cli.parse()
