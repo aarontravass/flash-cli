@@ -17,38 +17,43 @@ const readTextFile = async (file) => (await readFile(file)).toString()
  */
 const writeTextFile = async (file, content) => await writeFile(file, content)
 
-const prompt = async () => await prompts([
-  {
-    name: 'storage',
-    message: 'Storage Provider',
-    type: 'select',
-    choices: [{
-      title: 'IPFS',
-      value: 'ipfs',
-    }, {
-      title: 'Arweave (coming soon)',
-      value: 'arweave',
-      disabled: true,
-    }],
-  },
-  {
-    name: 'service',
-    message: 'Pinning Service',
-    type: 'select',
-    choices: [{
-      title: 'nft.storage',
-      value: 'nft.storage',
-    }, {
-      title: 'Pinata (coming soon)',
-      value: 'pinata.cloud',
-      disabled: true,
-    }, {
-      title: 'Estuary (coming soon)',
-      value: 'estuary.tech',
-      disabled: true,
-    }],
-  },
-])
+const prompt = async () =>
+  await prompts([
+    {
+      name: 'storage',
+      message: 'Storage Provider',
+      type: 'select',
+      choices: [{
+        title: 'IPFS',
+        value: 'ipfs',
+      }, {
+        title: 'Arweave (coming soon)',
+        value: 'arweave',
+        disabled: true,
+      }],
+    },
+    {
+      name: 'service',
+      message: 'Pinning Service',
+      type: 'select',
+      choices: [{
+        title: 'nft.storage',
+        value: 'nft.storage',
+      }, {
+        title: 'Pinata (coming soon)',
+        value: 'pinata.cloud',
+        disabled: true,
+      }, {
+        title: 'Estuary (coming soon)',
+        value: 'estuary.tech',
+        disabled: true,
+      }, {
+        title: 'Filebase (coming soon)',
+        value: 'filebase.com',
+        disabled: true,
+      }],
+    },
+  ])
 
 const cli = cac('flash')
 
