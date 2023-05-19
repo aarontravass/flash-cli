@@ -9,7 +9,7 @@ let ignored = []
  */
 export async function* walk(dir) {
   if (!ignored.length) {
-    ignored = ((await readFile('.gitignore')).toString()).split('\n')
+    try { ignored = ((await readFile('.gitignore')).toString()).split('\n')} catch {}
   }
   for await (const d of await opendir(dir)) {
     if (!ignored.includes(d.name)) {
