@@ -1,8 +1,0 @@
-export * as colors from 'https://deno.land/std@0.187.0/fmt/colors.ts'
-export { format } from 'https://deno.land/std@0.187.0/fmt/bytes.ts'
-export { exists } from 'https://deno.land/std@0.187.0/fs/exists.ts'
-export { walk } from 'https://deno.land/std@0.187.0/fs/walk.ts'
-export { Command } from 'https://deno.land/x/cliffy@v0.25.7/command/command.ts'
-export { Input, prompt, Select } from 'https://deno.land/x/cliffy@v0.25.7/prompt/mod.ts'
-export { NFTStorage } from 'https://esm.sh/nft.storage@7.0.3'
-export { readableStreamFromReader } from 'https://deno.land/std@0.187.0/streams/readable_stream_from_reader.ts'
