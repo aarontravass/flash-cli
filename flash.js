@@ -30,6 +30,10 @@ const prompt = async () =>
         title: 'Arweave (coming soon)',
         value: 'arweave',
         disabled: true,
+      }, {
+        title: 'Filecoin (coming soon)',
+        value: 'filecoin',
+        disabled: true,
       }],
     },
     {
