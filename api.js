@@ -47,21 +47,25 @@ const w3s = new NFTStorage({
 
 /**
  * @param {string} folder
+ * @param {string} service
  */
-export const deployToIpfs = async (folder) => {
+export const deployToIpfs = async (folder, service) => {
   const [total, files] = await dirData(folder)
   if (total === 0) return console.error(kleur.red(`Directory is empty`))
   console.log(kleur.cyan('Deploying on IPFS 🌍'))
-  console.log(kleur.white('Pinning service: web3.storage 🛰️'))
+  console.log(kleur.white(`Pinning service: ${service} 🛰️`))
   console.log(`Uploading ${fileSize(total)}`)
   const then = performance.now()
 
-  try {
+  if (service === 'nft.storage') {
     const result = await w3s.storeDirectory(files)
+    console.log(`Live on https://${result}.ipfs.dweb.link`)
+  }
+
+  try {
     console.log(
       `Deployed in ${((performance.now() - then) / 1000).toFixed(3)}s ✨`,
     )
-    console.log(`Live on https://${result}.ipfs.dweb.link`)
   } catch (e) {
     console.error(kleur.red(e.message))
   }

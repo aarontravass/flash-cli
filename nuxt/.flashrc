@@ -1,3 +1,4 @@
 {
-  "storage": "ipfs"
+  "storage": "ipfs",
+  "service": "nft.storage"
 }
