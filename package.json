@@ -1,8 +1,9 @@
 {
-  "name": "flash-cli",
+  "name": "flash",
   "version": "0.0.0",
   "type": "module",
   "license": "MIT",
+  "bin": "./dist/index.js",
   "dependencies": {
     "cac": "^6.7.14",
     "kleur": "^4.1.5",

@@ -1,15 +1,20 @@
-import {opendir} from 'node:fs/promises'
+import {opendir,readFile} from 'node:fs/promises'
 import path from 'node:path'
+
+let ignored = []
 
 /**
  * 
  * @param {string} dir 
  */
 export async function* walk(dir) {
+  if (!ignored.length) ignored = ((await readFile('.gitignore')).toString()).split('\n')
   for await (const d of await opendir(dir)) {
-      const entry = path.join(dir, d.name);
-      if (d.isDirectory()) yield* walk(entry);
-      else if (d.isFile()) yield entry;
+      if (!ignored.includes(d.name)) {
+        const entry = path.join(dir, d.name);
+        if (d.isDirectory()) yield* walk(entry);
+        else if (d.isFile() && !d.name.startsWith('.')) yield entry;
+      }
   }
 } 
 
@@ -41,3 +46,4 @@ export function fileSize(bytes, si=false, dp=1) {
 
   return bytes.toFixed(dp) + ' ' + units[u];
 }
+

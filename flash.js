@@ -20,10 +20,10 @@ const cli = cac('flash')
 
 cli
   .command(
-    '',
+    '[dir]',
     'Deploy Deploy websites and apps on the new decentralized stack.',
   )
-  .action(async () => {
+  .action(async (dir) => {
     let config = { storage: 'IPFS' }
     try {
       config = JSON.parse(await readTextFile('.flashrc'))
@@ -49,30 +49,16 @@ cli
         config = result
       }
     }
-    /**
-     * @type {string}
-     */
-    let folder
-    if (!config.output) {
-      const framework = await api.detectFramework()
-      switch (framework) {
-        case 'Next.js':
-          folder = 'out'
-          break
-        case 'Lume':
-          folder = '_site'
-          break
-        default:
-          folder = '.'
-      }
-      console.log(
-        kleur.cyan(
-          framework
-            ? `Detected framework: ${framework}`
-            : `Uploading static files`,
-        ),
-      )
-    } else folder = config.output
+
+    const framework = await api.detectFramework()
+    const folder = await api.getOutputFolder(framework, dir || config.output)
+    console.log(
+      kleur.cyan(
+        framework
+          ? `Detected framework: ${framework}`
+          : `Uploading static files`,
+      ),
+    )
     if (config.storage === 'ipfs') {
       await api.deployToIpfs(folder)
     }

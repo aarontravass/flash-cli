@@ -76,3 +76,22 @@ export const deployToIpfs = async (folder) => {
     console.error(kleur.red(e.message))
   }
 }
+
+/**
+ * @param {string} framework
+ * @param {string?} def 
+ */
+export const getOutputFolder =async (framework, def) => {
+  if (!def) {
+    switch (framework) {
+      case 'Next.js':
+        return 'out'
+        break
+      case 'Lume':
+        return '_site'
+      default:
+        return '.'
+    }
+  }
+  else return def
+}
