@@ -52,7 +52,7 @@ const w3s = new NFTStorage({
 export const deployToIpfs = async (folder, service) => {
   const [total, files] = await dirData(folder)
   if (total === 0) return console.error(kleur.red(`Directory is empty`))
-  console.log(kleur.cyan('Deploying on IPFS 🌍'))
+  console.log(kleur.green('Deploying on IPFS 🌍'))
   console.log(kleur.white(`Pinning service: ${service} 🛰️`))
   console.log(`Uploading ${fileSize(total)}`)
   const then = performance.now()
