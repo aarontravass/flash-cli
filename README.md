@@ -18,6 +18,7 @@ Supported frameworks:
 - Nuxt.js
 - Lume (Deno)
 - static
+- anything else Vercel and Fleek supports (WIP)
 
 Supported providers:
 
