@@ -1,5 +1,13 @@
 # Flash CLI
 
+## Install & Build from source
+
+```sh
+pnpm install && pnpm compile
+pnpm link --global
+flash # ready to be used
+```
+
 Supported frameworks:
 
 - Next.js
