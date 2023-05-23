@@ -10,6 +10,8 @@ pnpm link --global
 flash # ready to be used
 ```
 
+## Ecosystem
+
 Supported frameworks:
 
 - Next.js
