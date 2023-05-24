@@ -78,7 +78,6 @@ cli
         config = result
       }
     }
-
     const framework = await api.detectFramework()
     const folder = await api.getOutputFolder(framework, dir || config.output)
     console.log(

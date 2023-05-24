@@ -41,8 +41,8 @@ export const dirData = async (
 }
 
 const w3s = new NFTStorage({
-  token:
-    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJkaWQ6ZXRocjoweDczNjc4NWZlNzMyNDUzNjBiNThCMDM5NDUwZDVGNkI5NTNCMzU3N2QiLCJpc3MiOiJuZnQtc3RvcmFnZSIsImlhdCI6MTY4NDMxOTIwOTY1NywibmFtZSI6InRlc3QifQ.OcimXfIGsq6sXN32Ds_UP_YZt2tdyfBSB_e5qc-Fb54',
+  token: /* i'll delete it later */
+    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJkaWQ6ZXRocjoweDczNjc4NWZlNzMyNDUzNjBiNThCMDM5NDUwZDVGNkI5NTNCMzU3N2QiLCJpc3MiOiJuZnQtc3RvcmFnZSIsImlhdCI6MTY4NDk0NDYzMjQyNCwibmFtZSI6InRlc3QifQ.cdk_ajPj1y4DHchEGbyO4EJd74604OEKUyIO9hxLKc0',
 })
 
 /**
