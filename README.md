@@ -2,6 +2,10 @@
 
 # Flash CLI
 
+This repository contains a very basic prototype demonstrating features of Flash - deployment on decentralized storage and blockchain-based computing services.
+
+See the [landing page](https://flash-dev.vercel.app) for more info.
+
 ## Install & Build from source
 
 ```sh
