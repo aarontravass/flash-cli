@@ -3,7 +3,9 @@
   "version": "0.0.0",
   "type": "module",
   "license": "MIT",
-  "bin": "./dist/flash.js",
+  "bin": {
+    "flash": "./dist/flash.js"
+  },
   "dependencies": {
     "@gelatonetwork/web3-functions-sdk": "^2.0.5",
     "cac": "^6.7.14",
