@@ -4,9 +4,6 @@ dependencies:
   cac:
     specifier: ^6.7.14
     version: 6.7.14
-  flash:
-    specifier: file:flash-0.0.0.tgz
-    version: file:flash-0.0.0.tgz(node-fetch@3.3.1)
   kleur:
     specifier: ^4.1.5
     version: 4.1.5
@@ -16,6 +13,11 @@ dependencies:
   prompts:
     specifier: ^2.4.2
     version: 2.4.2
+
+devDependencies:
+  '@vercel/ncc':
+    specifier: ^0.36.1
+    version: 0.36.1
 
 packages:
 
@@ -145,6 +147,11 @@ packages:
   /@types/retry@0.12.0:
     resolution: {integrity: sha512-wWKOClTTiizcZhXnPY4wikVAwmdYHp8q6DmC+EJUzAMsycb7HB32Kh9RN4+0gExjmPmZSAQjgURXIGATPegAvA==}
     dev: false
+
+  /@vercel/ncc@0.36.1:
+    resolution: {integrity: sha512-S4cL7Taa9yb5qbv+6wLgiKVZ03Qfkc4jGRuiUQMQ8HGBD5pcNRnHeYM33zBvJE4/zJGjJJ8GScB+WmTsn9mORw==}
+    hasBin: true
+    dev: true
 
   /@web-std/blob@3.0.4:
     resolution: {integrity: sha512-+dibyiw+uHYK4dX5cJ7HA+gtDAaUUe6JsOryp2ZpAC7h4ICsh49E34JwHoEKPlPvP0llCrNzz45vvD+xX5QDBg==}
@@ -1474,21 +1481,4 @@ packages:
   /yargs-parser@20.2.9:
     resolution: {integrity: sha512-y11nGElTIV+CT3Zv9t7VKl+Q3hTQoT9a1Qzezhhl6Rp21gJ/IVTW7Z3y9EWXhuUBC2Shnf+DX0antecpAwSP8w==}
     engines: {node: '>=10'}
-    dev: false
-
-  file:flash-0.0.0.tgz(node-fetch@3.3.1):
-    resolution: {integrity: sha512-L4GFfml9y7XWZUYguBqs4nlD3/jmJfRgIGfQ40mZEy4m8fBiWbKpRCsIUDytsvUj1vwP0sfAoR183qFVZqbcXQ==, tarball: file:flash-0.0.0.tgz}
-    id: file:flash-0.0.0.tgz
-    name: flash
-    version: 0.0.0
-    hasBin: true
-    dependencies:
-      cac: 6.7.14
-      kleur: 4.1.5
-      nft.storage: 7.0.3(node-fetch@3.3.1)
-      prompts: 2.4.2
-    transitivePeerDependencies:
-      - encoding
-      - node-fetch
-      - supports-color
     dev: false

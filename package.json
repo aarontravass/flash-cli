@@ -12,5 +12,8 @@
   },
   "scripts": {
     "compile": "ncc build flash.js"
+  },
+  "devDependencies": {
+    "@vercel/ncc": "^0.36.1"
   }
 }
