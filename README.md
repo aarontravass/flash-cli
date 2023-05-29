@@ -6,7 +6,13 @@ This repository contains a very basic prototype demonstrating features of Flash 
 
 See the [landing page](https://flash-dev.vercel.app) for more info.
 
-## Install & Build from source
+## Install
+
+```sh
+npm i -g @flash-dev/cli
+```
+
+## Build from source
 
 ```sh
 pnpm install && pnpm compile
