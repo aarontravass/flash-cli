@@ -89,10 +89,10 @@ export const deployToIpfs = async (
 
   const carFile = await packCAR(files, folder)
 
-  let json
+  let json: any
 
-  if (service === 'web3.storage') await uploadCAR(carFile, 'web3')
-  else if (service === 'nft.storage') await uploadCAR(carFile, 'nft')
+  if (service === 'web3.storage') json = await uploadCAR(carFile, 'web3')
+  else if (service === 'nft.storage') json = await uploadCAR(carFile, 'nft')
 
   // if (service === 'nft.storage') {
   //   const { kp, did } = _did

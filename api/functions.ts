@@ -15,7 +15,7 @@ export const deployWeb3Function = async (name: string, path: string) => {
     })
     if (res.ok) {
       const { tx, taskId } = await res.json()
-      console.log({ tx, taskId })
+      console.log(`Success! ${name}-${taskId} -> ${tx.hash}`)
     } else {
       const err = await res.text()
       return console.error(kleur.red(`Failed to deploy ${name}`))
