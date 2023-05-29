@@ -1,21 +1,12 @@
 import { cac } from 'cac'
 import prompts from 'prompts'
-import { mkdir, readFile, writeFile } from 'node:fs/promises'
+import { mkdir, writeFile } from 'node:fs/promises'
 import kleur from 'kleur'
-import * as api from './api.js'
-import { exists } from './utils.js'
-
-/**
- * @param {string} file
- * @returns string
- */
-const readTextFile = async (file) => (await readFile(file)).toString()
-
-/**
- * @param {string} file
- * @param {string} content
- */
-const writeTextFile = async (file, content) => await writeFile(file, content)
+import { deployFunctions } from './api/functions.js'
+import { deployToIpfs } from './api/static.js'
+import { exists, readTextFile } from './utils/fs.js'
+import { detectFramework, getOutputFolder } from './utils/detect.js'
+import { Config } from './types.js'
 
 const prompt = async () =>
   await prompts([
@@ -26,14 +17,6 @@ const prompt = async () =>
       choices: [{
         title: 'IPFS',
         value: 'ipfs',
-      }, {
-        title: 'Arweave (coming soon)',
-        value: 'arweave',
-        disabled: true,
-      }, {
-        title: 'Filecoin (coming soon)',
-        value: 'filecoin',
-        disabled: true,
       }],
     },
     {
@@ -44,9 +27,8 @@ const prompt = async () =>
         title: 'nft.storage',
         value: 'nft.storage',
       }, {
-        title: 'Pinata (coming soon)',
-        value: 'pinata.cloud',
-        disabled: true,
+        title: 'web3.storage',
+        value: 'web3.storage'
       }, {
         title: 'Estuary (coming soon)',
         value: 'estuary.tech',
@@ -67,19 +49,19 @@ cli
     'Deploy Deploy websites and apps on the new decentralized stack.',
   )
   .action(async (dir) => {
-    let config = { storage: 'IPFS', service: 'nft.storage' }
+    let config: Config = { storage: 'IPFS', service: 'nft.storage' }
     try {
-      config = JSON.parse(await readTextFile('.flashrc'))
+      config = JSON.parse(await readTextFile('flash.json'))
     } catch (e) {
       if (e.syscall === 'open') {
         const result = await prompt()
 
-        await writeTextFile('.flashrc', JSON.stringify(result, null, 2))
+        await writeFile('flash.json', JSON.stringify(result, null, 2))
         config = result
       }
     }
-    const framework = await api.detectFramework()
-    const folder = await api.getOutputFolder(framework, dir || config.output)
+    const framework = await detectFramework()
+    const folder = await getOutputFolder(framework, dir || config.output)
     console.log(
       kleur.cyan(
         framework
@@ -87,8 +69,19 @@ cli
           : `Uploading static files`,
       ),
     )
+    const then = performance.now()
     if (config.storage === 'ipfs') {
-      await api.deployToIpfs(folder, config.service)
+      await deployToIpfs(folder, config)
+    }
+    if (await exists('web3-functions')) {
+      await deployFunctions()
+    }
+    try {
+      console.log(
+        `Deployed in ${((performance.now() - then) / 1000).toFixed(3)}s ✨`,
+      )
+    } catch (e) {
+      console.error(kleur.red(e.message))
     }
   })
 
@@ -98,13 +91,13 @@ cli.command('init [dir]', 'Initialize a new Flash project').action(
       await mkdir(dir)
       process.chdir(dir)
     }
-    if (await exists('.flashrc')) {
+    if (await exists('flash.json')) {
       return console.error(kleur.red('Project is already initialized'))
     }
 
     const result = await prompt()
 
-    await writeTextFile('.flashrc', JSON.stringify(result, null, 2))
+    await writeFile('flash.json', JSON.stringify(result, null, 2))
     console.log(kleur.cyan('✅ Successfully initialized new project'))
   },
 )

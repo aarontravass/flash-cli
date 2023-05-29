@@ -1,19 +1,30 @@
 {
-  "name": "flash",
-  "version": "0.0.0",
+  "name": "@flash-dev/cli",
+  "version": "0.0.1",
   "type": "module",
   "license": "MIT",
-  "bin": "./dist/index.js",
-  "dependencies": {
-    "cac": "^6.7.14",
-    "kleur": "^4.1.5",
-    "nft.storage": "^7.0.3",
-    "prompts": "^2.4.2"
+  "bin": {
+    "flash": "./dist/flash.js"
   },
+  "dependencies": {
+    "@gelatonetwork/web3-functions-sdk": "^2.0.5",
+    "@ipld/car": "^5.1.1",
+    "@web3-storage/w3up-client": "^6.0.1",
+    "cac": "^6.7.14",
+    "envfile": "^6.18.0",
+    "ipfs-car": "^1.0.0",
+    "kleur": "^4.1.5",
+    "multiformats": "^11.0.2",
+    "prompts": "^2.4.2",
+    "ucan-storage": "^1.3.0"
+  },
+  "files": [
+    "dist"
+  ],
   "scripts": {
-    "compile": "ncc build flash.js"
+    "compile": "esbuild flash.ts --platform=node --packages=external  --bundle --outdir=dist  --target=node18 --format=esm"
   },
   "devDependencies": {
-    "@vercel/ncc": "^0.36.1"
+    "esbuild": "^0.17.19"
   }
 }
