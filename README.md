@@ -8,7 +8,13 @@ services.
 
 See the [landing page](https://flash-dev.vercel.app) for more info.
 
-## Install & Build from source
+## Install
+
+```sh
+npm i -g @flash-dev/cli
+```
+
+## Build from source
 
 ```sh
 pnpm install && pnpm compile
