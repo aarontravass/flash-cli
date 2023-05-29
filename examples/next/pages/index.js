@@ -8,11 +8,12 @@ export default function Home() {
   const [dinos, setDinos] = useState([])
 
   useEffect(() => {
+    async function run() {
+      const { data } = await coll.get()
+      setDinos(data.map((x) => x.data))
+    }
+    run()
     const interval = setInterval(() => {
-      async function run() {
-        const { data } = await coll.get()
-        setDinos(data.map((x) => x.data))
-      }
       run()
     }, 60 * 1000)
 

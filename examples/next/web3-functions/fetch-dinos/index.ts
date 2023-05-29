@@ -16,13 +16,10 @@ await db.applySchema(`
 `)
 
 Web3Function.onRun(async ({ storage, multiChainProvider }) => {
-  const lastBlockStr = (await storage.get('lastBlockNumber')) ?? '0'
-  const lastBlock = parseInt(lastBlockStr)
+  const lastBlock = parseInt((await storage.get('lastBlockNumber')) ?? '0')
 
   const newBlock = await multiChainProvider.default().getBlockNumber()
-  if (newBlock > lastBlock) {
-    await storage.set('lastBlockNumber', newBlock.toString())
-  }
+  if (newBlock > lastBlock) await storage.set('lastBlockNumber', newBlock.toString())
 
   const res = await fetch(
     'https://dinoipsum.com/api/?format=text&paragraphs=1&words=1', { method: 'GET' }
