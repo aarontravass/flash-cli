@@ -1,8 +1,10 @@
-import { opendir, readFile, access, constants } from 'node:fs/promises'
+import { access, constants, opendir, readFile, stat } from 'node:fs/promises'
 import path from 'node:path'
+import { createReadStream } from 'node:fs'
+import { Readable } from 'node:stream'
+import { FileEntry } from '../types'
 
 let ignored: string[] = []
-
 
 export async function* walk(dir: string) {
   if (!ignored.length) {
@@ -18,7 +20,6 @@ export async function* walk(dir: string) {
     }
   }
 }
-
 
 export function fileSize(bytes: number, si = false, dp = 1): string {
   const thresh = si ? 1000 : 1024
@@ -56,37 +57,28 @@ export const exists = async (file: string) => {
   }
 }
 
-export const detectFramework = async () => {
-  if (await exists('_config.ts')) return 'Lume'
-  else if (await exists('.next') || await exists('next.config.js')) {
-    return 'Next.js'
-  } else if (await exists('.nuxt') || await exists('nuxt.config.ts')) {
-    return 'Nuxt.js'
-  } else return 
+export const dirData = async (
+  dir: string,
+) => {
+  let total = 0
+  const files: FileEntry[] = []
+  for await (
+    const path of walk(dir)
+  ) {
+    const size = (await stat(path)).size
+    total += size
+    files.push({
+      name: dir === '.' ? path : path.replace(dir, ''),
+      size,
+      stream: () => Readable.toWeb(createReadStream(path)) as ReadableStream,
+    })
+  }
+  return [total, files] as const
 }
-
 
 /**
  * @param {string} file
  * @returns string
  */
-export const readTextFile = async (file: string) => (await readFile(file)).toString()
-
-/**
- * @param {string} framework
- * @param {string?} def
- */
-export const getOutputFolder = async (framework?: string, def?: string) => {
-  if (!def) {
-    switch (framework) {
-      case 'Next.js':
-        return 'out'
-      case 'Lume':
-        return '_site'
-      case 'Nuxt.js':
-        return 'dist'
-      default:
-        return '.'
-    }
-  } else return def
-}
+export const readTextFile = async (file: string) =>
+  (await readFile(file)).toString()

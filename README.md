@@ -2,7 +2,9 @@
 
 # Flash CLI
 
-This repository contains a very basic prototype demonstrating features of Flash - deployment on decentralized storage and blockchain-based computing services.
+This repository contains a very basic prototype demonstrating features of
+Flash - deployment on decentralized storage and blockchain-based computing
+services.
 
 See the [landing page](https://flash-dev.vercel.app) for more info.
 
@@ -28,17 +30,16 @@ Supported providers:
 
 - IPFS
   - nft.storage
+  - web3.storage
   - Estuary (WIP)
   - Filebase (WIP)
-  - Pinata (WIP)
 
 Supported protocols:
 
 - IPFS
-- Arweave (Maybe/WIP)
-- Filecoin (WIP)
 
 Supported Serverless/Web3:
 
 - Gelato (WIP)
 - Taubyte (Maybe/WIP)
+- IPVM (not implemented yet)
