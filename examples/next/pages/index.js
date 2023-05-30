@@ -1,7 +1,6 @@
-import { Polybase } from '@polybase/client'
 import { useEffect, useState } from 'react'
+import { db } from '../lib/db.js'
 
-const db = new Polybase({ defaultNamespace: 'dinos' })
 const coll = db.collection('Dino')
 
 export default function Home() {

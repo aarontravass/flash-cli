@@ -1,7 +1,5 @@
 import { Web3Function } from '@gelatonetwork/web3-functions-sdk'
-import { Polybase } from '@polybase/client'
-
-const db = new Polybase({ defaultNamespace: 'dinos' })
+import { db } from '../../lib/db.js'
 
 await db.applySchema(`
   @public
