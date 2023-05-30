@@ -39,10 +39,13 @@ Supported providers:
   - web3.storage
   - Estuary (WIP)
   - Filebase (WIP)
+- Arweave
+  - Bundlr (WIP) 
 
 Supported protocols:
 
 - IPFS
+- Arweave (WIP)
 
 Supported Serverless/Web3:
 
