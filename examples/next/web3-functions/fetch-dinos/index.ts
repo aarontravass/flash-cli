@@ -1,17 +1,17 @@
 import { Web3Function } from '@gelatonetwork/web3-functions-sdk'
 import { db } from '../../lib/db.js'
 
-// await db.applySchema(`
-//   @public
-//   collection Dino {
-//     id: string;
-//     name: string;
-//     constructor (id: string, name: string) {
-//       this.id = id;
-//       this.name = name;
-//     }
-//   }
-// `)
+await db.applySchema(`
+  @public
+  collection Dino {
+    id: string;
+    name: string;
+    constructor (id: string, name: string) {
+      this.id = id;
+      this.name = name;
+    }
+  }
+`)
 
 Web3Function.onRun(async ({ storage, multiChainProvider }) => {
   const lastBlock = parseInt((await storage.get('lastBlockNumber')) ?? '0')
