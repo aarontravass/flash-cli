@@ -2,57 +2,7 @@ import kleur from 'kleur'
 import { dirData, fileSize, readTextFile } from '../utils/fs.js'
 import { packCAR } from '../utils/ipfs.js'
 import type { Config, DID, Email } from '../types.js'
-// import { createNewKeypair, getUCANToken, loadKeyPair } from '../utils/ucan.js'
-// import { create } from '@web3-storage/w3up-client'
-// import prompts from 'prompts'
-// import { writeFile } from 'node:fs/promises'
 
-// const uploadToNftStorage = async (car: Blob, ucanToken: string, did: DID) => {
-//   const res = await fetch('https://api.nft.storage/upload', {
-//     method: 'POST',
-//     headers: {
-//       'Content-Type': 'application/car',
-//       'Authorization': `Bearer ${ucanToken}`,
-//       'x-agent-did': did,
-//     },
-//     body: car,
-//   })
-//   const text = await res.text()
-//   console.log(res.status, text)
-// }
-
-// export const uploadToWeb3Storage = async (car: Blob, configEmail?: Email) => {
-//   const client = await create()
-//   if (!configEmail) {
-//     const { email }: { email: Email } = await prompts([
-//       {
-//         message: 'Enter your email to verify you are not a bot',
-//         type: 'text',
-//         name: 'email',
-//       },
-//     ])
-//     console.log(`An email to ${email} was sent`)
-//     const config = JSON.parse(await readTextFile('flash.json'))
-//     await writeFile('flash.json', JSON.stringify({ ...config, email }, null, 2))
-//     try {
-//       await client.authorize(email)
-//     } catch {
-//       return console.error(kleur.red(`Failed to send an email to ${email}`))
-//     }
-//   } else {
-//     try {
-//       await client.registerSpace(configEmail, {
-//         provider: 'did:web:web3.storage',
-//       })
-//     } catch (e) {
-//       const space = await client.createSpace()
-//       await client.setCurrentSpace(space.did())
-//     }
-//   }
-
-//   const result = await client.uploadCAR(car)
-//   console.log(result)
-// }
 
 // I am in process of implementing UCAN auth for both but it's not working so this is a hotfix
 const TEMPORARY_TOKENS = {
