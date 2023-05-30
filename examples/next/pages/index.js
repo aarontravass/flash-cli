@@ -1,12 +1,12 @@
 import { useEffect, useState } from 'react'
 import { db } from '../lib/db.js'
 
-const coll = db.collection('Dino')
 
 export default function Home() {
   const [dinos, setDinos] = useState([])
 
   useEffect(() => {
+    const coll = db.collection('Dino')
     async function run() {
       const { data } = await coll.get()
       setDinos(data.map((x) => x.data))
