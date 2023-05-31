@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { db } from '../lib/db.js'
-
+import styles from './index.module.css'
 
 export default function Home() {
   const [dinos, setDinos] = useState([])
@@ -22,8 +22,8 @@ export default function Home() {
   return (
     <main style={{ padding: 48 }}>
       <h1>Dinosaurs</h1>
-      <ul>
-        {dinos.map((dino) => <li key={dino.id}>{dino.name}</li>)}
+      <ul className={styles.grid}>
+        {dinos.map((dino) => <li className={styles.li} key={dino.id}>{dino.name}</li>)}
       </ul>
     </main>
   )
