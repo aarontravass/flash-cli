@@ -14,30 +14,37 @@ const prompt = async () =>
       name: 'storage',
       message: 'Storage Provider',
       type: 'select',
-      choices: [{
-        title: 'IPFS',
-        value: 'ipfs',
-      }],
+      choices: [
+        {
+          title: 'IPFS',
+          value: 'ipfs',
+        },
+      ],
     },
     {
       name: 'service',
       message: 'Pinning Service',
       type: 'select',
-      choices: [{
-        title: 'nft.storage',
-        value: 'nft.storage',
-      }, {
-        title: 'web3.storage',
-        value: 'web3.storage'
-      }, {
-        title: 'Estuary (coming soon)',
-        value: 'estuary.tech',
-        disabled: true,
-      }, {
-        title: 'Filebase (coming soon)',
-        value: 'filebase.com',
-        disabled: true,
-      }],
+      choices: [
+        {
+          title: 'nft.storage',
+          value: 'nft.storage',
+        },
+        {
+          title: 'web3.storage',
+          value: 'web3.storage',
+        },
+        {
+          title: 'Estuary (coming soon)',
+          value: 'estuary.tech',
+          disabled: true,
+        },
+        {
+          title: 'Filebase (coming soon)',
+          value: 'filebase.com',
+          disabled: true,
+        },
+      ],
     },
   ])
 
@@ -46,9 +53,9 @@ const cli = cac('flash')
 cli
   .command(
     '[dir]',
-    'Deploy Deploy websites and apps on the new decentralized stack.',
+    'Deploy Deploy websites and apps on the new decentralized stack.'
   )
-  .action(async (dir) => {
+  .action(async dir => {
     let config: Config = { storage: 'IPFS', service: 'nft.storage' }
     try {
       config = JSON.parse(await readTextFile('flash.json'))
@@ -66,8 +73,8 @@ cli
       kleur.cyan(
         framework
           ? `Detected framework: ${framework}`
-          : `Uploading static files`,
-      ),
+          : `Uploading static files`
+      )
     )
     const then = performance.now()
     if (config.storage === 'ipfs') {
@@ -78,15 +85,16 @@ cli
     }
     try {
       console.log(
-        `Deployed in ${((performance.now() - then) / 1000).toFixed(3)}s ✨`,
+        `Deployed in ${((performance.now() - then) / 1000).toFixed(3)}s ✨`
       )
     } catch (e) {
       console.error(kleur.red(e.message))
     }
   })
 
-cli.command('init [dir]', 'Initialize a new Flash project').action(
-  async (dir) => {
+cli
+  .command('init [dir]', 'Initialize a new Flash project')
+  .action(async dir => {
     if (dir) {
       await mkdir(dir)
       process.chdir(dir)
@@ -99,7 +107,6 @@ cli.command('init [dir]', 'Initialize a new Flash project').action(
 
     await writeFile('flash.json', JSON.stringify(result, null, 2))
     console.log(kleur.cyan('✅ Successfully initialized new project'))
-  },
-)
+  })
 cli.help()
 cli.parse()
