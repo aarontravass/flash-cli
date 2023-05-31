@@ -2,7 +2,6 @@ import { Web3FunctionBuilder } from '@gelatonetwork/web3-functions-sdk/builder'
 import { readdir } from 'node:fs/promises'
 import path from 'node:path'
 import kleur from 'kleur'
-import { randomUUID } from 'node:crypto'
 
 export const deployWeb3Function = async (name: string, path: string) => {
   const cid = await Web3FunctionBuilder.deploy(path)

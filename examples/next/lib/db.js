@@ -1,3 +1,5 @@
 import { Polybase } from '@polybase/client'
 
-export const db = new Polybase({ defaultNamespace: 'dinos', baseURL:`${process.env.NEXT_PUBLIC_API_URL}/v0` })
+const BASE_URL = `https://testnet.polybase.xyz`
+
+export const db = new Polybase({ defaultNamespace: 'dinos', baseURL:`${BASE_URL}/v0` })
