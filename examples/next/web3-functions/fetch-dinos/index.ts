@@ -19,7 +19,8 @@ Web3Function.onRun(async ({ storage, multiChainProvider }) => {
   if (newBlock > lastBlock) await storage.set('lastBlockNumber', newBlock.toString())
 
   const res = await fetch('https://dinoipsum.com/api/?format=text&paragraphs=1&words=1')
+  if (!res.ok) return { canExec: false, message: `Failed to get a dino`}
   const dino = (await res.text()).trim()
   await db.collection('Dino').create([newBlock.toString(), dino])
-  return { canExec: false, message: `Saved dino ${dino}` }
+  return { canExec: true, message: `Saved dino ${dino}`, callData: [] }
 })
