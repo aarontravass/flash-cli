@@ -54,5 +54,5 @@ export const deployToIpfs = async (
   //   await uploadToWeb3Storage(carFile, email)
   // }
 
-  console.log(`Live on https://${json.cid}.ipfs.dweb.link`)
+  console.log(`Live on https://${json.cid}.ipfs.w3s.link`)
 }
