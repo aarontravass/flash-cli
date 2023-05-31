@@ -6,6 +6,10 @@ import { readFile, open } from 'node:fs/promises'
 import { Writable } from 'node:stream'
 import { createWriteStream } from 'node:fs'
 import { CarWriter } from '@ipld/car/writer'
+import { create } from '@web3-storage/w3up-client'
+import kleur from 'kleur'
+import type { Email } from '../types'
+import type { Config } from '../types'
 
 // import { createNewKeypair, getUCANToken, loadKeyPair } from '../utils/ucan.js'
 // import { create } from '@web3-storage/w3up-client'
@@ -63,16 +67,21 @@ const tmp = tmpdir()
 
 export const packCAR = async (files: FileEntry[], folder: string) => {
   const output = `${tmp}/${folder}.car`
-  const placeholderCID = CID.parse('bafybeigdyrzt5sfp7udm7hu76uh7y26nf3efuylqabf3oclgtqy55fbzdi')
+  const placeholderCID = CID.parse(
+    'bafybeigdyrzt5sfp7udm7hu76uh7y26nf3efuylqabf3oclgtqy55fbzdi'
+  )
   let rootCID: CID<unknown, number, number, 1>
-  await createDirectoryEncoderStream(files).pipeThrough(new TransformStream({
-    transform (block, controller) {
-      rootCID = block.cid as CID<unknown, number, number, 1>
-      controller.enqueue(block)
-    }
-  }))
-  .pipeThrough(new CAREncoderStream([placeholderCID]))
-  .pipeTo(Writable.toWeb(createWriteStream(output)))
+  await createDirectoryEncoderStream(files)
+    .pipeThrough(
+      new TransformStream({
+        transform(block, controller) {
+          rootCID = block.cid as CID<unknown, number, number, 1>
+          controller.enqueue(block)
+        },
+      })
+    )
+    .pipeThrough(new CAREncoderStream([placeholderCID]))
+    .pipeTo(Writable.toWeb(createWriteStream(output)))
 
   const fd = await open(output, 'r+')
   await CarWriter.updateRootsInFile(fd, [rootCID!])
@@ -81,4 +90,25 @@ export const packCAR = async (files: FileEntry[], folder: string) => {
   const file = await readFile(output)
   const blob = new Blob([file], { type: 'application/vnd.ipld.car' })
   return blob
+}
+
+export const uploadCAR = async (car: Blob, { service, email }: Config) => {
+  const client = await create()
+
+  console.log(`Sending authorization mail to ${email} 📧`)
+  await client.authorize(email)
+  console.log(kleur.cyan('Email authorized, uploading...'))
+
+  const space = await client.createSpace()
+
+  await client.setCurrentSpace(space.did())
+  try {
+    await client.registerSpace(email, {
+      provider: `did:web:${service}`,
+    })
+  } catch (err) {
+    console.error('registration failed: ', err)
+  }
+  const result = await client.uploadCAR(car)
+  return result
 }

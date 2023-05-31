@@ -13,7 +13,7 @@ export type Config = {
   service: PinningService
   output?: string
   // did?: DID
-  // email?: Email
+  email: Email
 }
 
 export type PinningService =

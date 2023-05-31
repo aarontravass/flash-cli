@@ -56,7 +56,11 @@ cli
     'Deploy Deploy websites and apps on the new decentralized stack.'
   )
   .action(async dir => {
-    let config: Config = { storage: 'IPFS', service: 'nft.storage' }
+    let config: Config = {
+      storage: 'ipfs',
+      service: 'nft.storage',
+      email: 'hello@example.com',
+    }
     try {
       config = JSON.parse(await readTextFile('flash.json'))
     } catch (e) {
@@ -64,7 +68,7 @@ cli
         const result = await prompt()
 
         await writeFile('flash.json', JSON.stringify(result, null, 2))
-        config = result
+        config = result as Config
       }
     }
     const framework = await detectFramework()
