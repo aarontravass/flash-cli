@@ -7,7 +7,9 @@ import { deployToIpfs } from './api/static.js'
 import { exists, readTextFile } from './utils/fs.js'
 import { detectFramework, getOutputFolder } from './utils/detect.js'
 import { Config } from './types.js'
+import { addEmailToNetrc, flashHostExistsInNetrc } from './utils/netrc.js'
 
+const emailPattern = /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/
 const prompt = async () =>
   await prompts([
     {
@@ -46,6 +48,22 @@ const prompt = async () =>
         },
       ],
     },
+    {
+      name: 'email',
+      type: 'text',
+      message: 'What is your email address?',
+      validate: value => (!emailPattern.test(value) ? 'Invalid email' : true),
+    },
+  ])
+
+const emailPrompt = async () =>
+  await prompts([
+    {
+      name: 'email',
+      type: 'text',
+      message: 'What is your email address?',
+      validate: value => (!emailPattern.test(value) ? 'Invalid email' : true),
+    },
   ])
 
 const cli = cac('flash')
@@ -82,6 +100,15 @@ cli
     )
     const then = performance.now()
     if (config.storage === 'ipfs') {
+      // use email from netrc or prompt user for email if it doesn't exist
+      const emailConfigExists = await flashHostExistsInNetrc()
+      if (!emailConfigExists) {
+        const result = await emailPrompt()
+        config.email = result.email
+        await addEmailToNetrc(result.email)
+      } else {
+        config.email = emailConfigExists
+      }
       await deployToIpfs(folder, config)
     }
     if (await exists('web3-functions')) {
@@ -108,8 +135,10 @@ cli
     }
 
     const result = await prompt()
+    const { email, ...rest } = result
 
-    await writeFile('flash.json', JSON.stringify(result, null, 2))
+    await addEmailToNetrc(email)
+    await writeFile('flash.json', JSON.stringify(rest, null, 2))
     console.log(kleur.cyan('✅ Successfully initialized new project'))
   })
 cli.help()
