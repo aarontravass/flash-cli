@@ -1,5 +1,5 @@
 import { CAREncoderStream, createDirectoryEncoderStream } from 'ipfs-car'
-import type { FileEntry } from '../types'
+import type { FileEntry, GlobalConfig } from '../types'
 import { CID, Link } from 'multiformats'
 import { tmpdir } from 'node:os'
 import { readFile, open } from 'node:fs/promises'
@@ -10,6 +10,8 @@ import { create } from '@web3-storage/w3up-client'
 import kleur from 'kleur'
 import type { Email } from '../types'
 import type { Config } from '../types'
+import { getGlobalFlashConfig, updateFlashGlobalConfig } from './flashglobal'
+import prompts from 'prompts'
 
 // import { createNewKeypair, getUCANToken, loadKeyPair } from '../utils/ucan.js'
 // import { create } from '@web3-storage/w3up-client'
@@ -92,23 +94,50 @@ export const packCAR = async (files: FileEntry[], folder: string) => {
   return blob
 }
 
-export const uploadCAR = async (car: Blob, { service, email }: Config) => {
+const emailPattern = /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/
+
+const emailPrompt = async () =>
+  await prompts([
+    {
+      name: 'email',
+      type: 'text',
+      message: "Verify your email to confirm that you're not a bot",
+      validate: value => (!emailPattern.test(value) ? 'Invalid email' : true),
+    },
+  ])
+
+export const uploadCAR = async (car: Blob, { service }: Config) => {
   const client = await create()
+  let globalConfig = await getGlobalFlashConfig()
+  if (!globalConfig) {
+    const result = await emailPrompt()
+    console.log(`Sent email to ${result.email} 📧`)
+    await client.authorize(result.email)
 
-  console.log(`Sending authorization mail to ${email} 📧`)
-  await client.authorize(email)
-  console.log(kleur.cyan('Email authorized, uploading...'))
+    console.log(kleur.cyan('Email authorized, uploading...'))
 
-  const space = await client.createSpace()
+    const space = await client.createSpace()
 
-  await client.setCurrentSpace(space.did())
-  try {
-    await client.registerSpace(email, {
-      provider: `did:web:${service}`,
-    })
-  } catch (err) {
-    console.error('registration failed: ', err)
+    const did = space.did()
+
+    await client.setCurrentSpace(did)
+    try {
+      await client.registerSpace(result.email, {
+        provider: `did:web:${service}`,
+      })
+    } catch (err) {
+      console.error('registration failed: ', err)
+    }
+
+    globalConfig = {
+      email: result.email,
+      did: did,
+    }
+    await updateFlashGlobalConfig(globalConfig)
+  } else {
+    await client.setCurrentSpace(globalConfig.did)
   }
+
   const result = await client.uploadCAR(car)
   return result
 }

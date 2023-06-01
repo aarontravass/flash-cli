@@ -12,9 +12,13 @@ export type Config = {
   storage: string | 'IPFS'
   service: PinningService
   output?: string
-  // did?: DID
-  email: Email
 }
+
+export type GlobalConfig = {
+  email: Email,
+  did: DID
+}
+
 
 export type PinningService =
   | 'nft.storage'

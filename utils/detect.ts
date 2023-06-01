@@ -3,9 +3,9 @@ import { exists } from './fs.js'
 
 export const detectFramework = async () => {
   if (await exists('_config.ts')) return 'Lume'
-  else if (await exists('.next') || await exists('next.config.js')) {
+  else if ((await exists('.next')) || (await exists('next.config.js'))) {
     return 'Next.js'
-  } else if (await exists('.nuxt') || await exists('nuxt.config.ts')) {
+  } else if ((await exists('.nuxt')) || (await exists('nuxt.config.ts'))) {
     return 'Nuxt.js'
   } else return
 }
