@@ -1,3 +1,5 @@
+#! /usr/bin/env node
+
 import { cac } from 'cac'
 import prompts from 'prompts'
 import { mkdir, writeFile } from 'node:fs/promises'
