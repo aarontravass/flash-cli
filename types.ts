@@ -15,10 +15,9 @@ export type Config = {
 }
 
 export type GlobalConfig = {
-  email: Email,
+  email: Email
   did: DID
 }
-
 
 export type PinningService =
   | 'nft.storage'

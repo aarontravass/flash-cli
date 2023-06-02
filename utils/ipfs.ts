@@ -43,20 +43,23 @@ export const packCAR = async (files: FileEntry[], folder: string) => {
 const emailPattern = /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/
 
 const emailPrompt = async () =>
-  await prompts([
-    {
-      name: 'email',
-      type: 'text',
-      message: "Verify your email to confirm that you're not a bot",
-      validate: value => (!emailPattern.test(value) ? 'Invalid email' : true),
-    },
-  ])
+  await prompts(
+    [
+      {
+        name: 'email',
+        type: 'text',
+        message: "Verify your email to confirm that you're not a bot",
+        validate: value => (!emailPattern.test(value) ? 'Invalid email' : true),
+      },
+    ]
+  )
 
 export const uploadCAR = async (car: Blob, { service }: Config) => {
   const client = await create()
   let globalConfig = await getGlobalFlashConfig()
   if (!globalConfig) {
     const result = await emailPrompt()
+    if (!result.email) return process.exit(0)
     console.log(`Sent email to ${result.email} 📧`)
     await client.authorize(result.email)
 

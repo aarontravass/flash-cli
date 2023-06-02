@@ -10,45 +10,62 @@ import { exists, readTextFile } from './utils/fs.js'
 import { detectFramework, getOutputFolder } from './utils/detect.js'
 import { Config } from './types.js'
 
-const prompt = async () =>
-  await prompts([
-    {
-      name: 'storage',
-      message: 'Storage Provider',
-      type: 'select',
-      choices: [
-        {
-          title: 'IPFS',
-          value: 'ipfs',
-        },
-      ],
-    },
-    {
-      name: 'service',
-      message: 'Pinning Service',
-      type: 'select',
-      choices: [
-        {
-          title: 'nft.storage',
-          value: 'nft.storage',
-        },
-        {
-          title: 'web3.storage',
-          value: 'web3.storage',
-        },
-        {
-          title: 'Estuary (coming soon)',
-          value: 'estuary.tech',
-          disabled: true,
-        },
-        {
-          title: 'Filebase (coming soon)',
-          value: 'filebase.com',
-          disabled: true,
-        },
-      ],
-    },
-  ])
+const prompt = async (options?: prompts.Options) =>
+  await prompts(
+    [
+      {
+        name: 'storage',
+        message: 'Storage Provider',
+        type: 'select',
+        choices: [
+          {
+            title: 'IPFS',
+            value: 'ipfs',
+          },
+          {
+            title: 'Arweave',
+            value: 'arweave',
+            disabled: true,
+          },
+        ],
+      },
+      {
+        name: 'service',
+        message: 'Pinning Service',
+        type: 'select',
+        choices: args =>
+          args === 'ipfs'
+            ? [
+                {
+                  title: 'nft.storage',
+                  value: 'nft.storage',
+                },
+                {
+                  title: 'web3.storage',
+                  value: 'web3.storage',
+                },
+                {
+                  title: 'Estuary (coming soon)',
+                  value: 'estuary.tech',
+                  disabled: true,
+                },
+                {
+                  title: 'Filebase (coming soon)',
+                  value: 'filebase.com',
+                  disabled: true,
+                },
+              ]
+            : [
+                {
+                  title: 'Bundlr (coming soon)',
+                  value: 'bundlr.network',
+                  disabled: true,
+                },
+              ],
+      },
+    ],
+    options
+  )
 
 const cli = cac('flash')
 
@@ -67,6 +84,7 @@ cli
     } catch (e) {
       if (e.syscall === 'open') {
         const result = await prompt()
+        if (!result.storage || !result.service) return process.exit(0)
 
         await writeFile('flash.json', JSON.stringify(result, null, 2))
         config = result as Config
