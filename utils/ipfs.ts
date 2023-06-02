@@ -1,6 +1,6 @@
 import { CAREncoderStream, createDirectoryEncoderStream } from 'ipfs-car'
 import type { FileEntry } from '../types'
-import { CID } from 'multiformats'
+import { CID } from 'multiformats/cid'
 import { tmpdir } from 'node:os'
 import { readFile, open } from 'node:fs/promises'
 import { Writable } from 'node:stream'
