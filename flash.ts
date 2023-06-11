@@ -4,7 +4,6 @@ import { cac } from 'cac'
 import prompts from 'prompts'
 import { mkdir, writeFile } from 'node:fs/promises'
 import kleur from 'kleur'
-import { deployFunctions } from './api/functions.js'
 import { deployToIpfs } from './api/static.js'
 import { exists, readTextFile } from './utils/fs.js'
 import { detectFramework, getOutputFolder } from './utils/detect.js'
@@ -104,6 +103,7 @@ cli
       await deployToIpfs(folder, config)
     }
     if (await exists('web3-functions')) {
+      const deployFunctions = await import('./api/functions.js').then(m => m.deployFunctions)
       await deployFunctions()
     }
     try {
