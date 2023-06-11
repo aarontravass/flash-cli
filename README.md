@@ -29,6 +29,7 @@ Supported frameworks:
 - Next.js
 - Nuxt.js
 - Lume (Deno)
+- CRA
 - static
 - anything else Vercel and Fleek supports (WIP)
 
@@ -49,6 +50,6 @@ Supported protocols:
 
 Supported Serverless/Web3:
 
-- Gelato (WIP)
+- Gelato
 - Taubyte (Maybe/WIP)
 - IPVM (not implemented yet)
