@@ -3,16 +3,19 @@ import kleur from 'kleur'
 import { readTextFile } from './fs.js'
 
 const detectFramework = async () => {
-  const packageJson = JSON.parse(await readTextFile('package.json') || '{}')
+  const packageJson = JSON.parse((await readTextFile('package.json')) || '{}')
   if (await exists('_config.ts')) return 'Lume'
   else if ((await exists('.next')) || (await exists('next.config.js'))) {
     return 'Next.js'
   } else if ((await exists('.nuxt')) || (await exists('nuxt.config.ts'))) {
     return 'Nuxt.js'
-  } else if (await exists('build') && await exists('src') && await exists('public/index.html')) {
+  } else if (
+    (await exists('build')) &&
+    (await exists('src')) &&
+    (await exists('public/index.html'))
+  ) {
     return 'Create React App'
-  }
-   else return
+  } else return
 }
 
 /**
@@ -42,9 +45,7 @@ export const getProjectOutputs = async (defined?: string) => {
 
   console.log(
     kleur.cyan(
-      framework
-        ? `Detected framework: ${framework}`
-        : `Uploading static files`
+      framework ? `Detected framework: ${framework}` : `Uploading static files`
     )
   )
   return folder

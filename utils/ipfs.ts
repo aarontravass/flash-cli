@@ -42,18 +42,19 @@ export const packCAR = async (files: FileEntry[], folder: string) => {
 const emailPattern = /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/
 
 const emailPrompt = async () =>
-  await prompts(
-    [
-      {
-        name: 'email',
-        type: 'text',
-        message: "Verify your email to confirm that you're not a bot",
-        validate: value => (!emailPattern.test(value) ? 'Invalid email' : true),
-      },
-    ]
-  )
+  await prompts([
+    {
+      name: 'email',
+      type: 'text',
+      message: "Verify your email to confirm that you're not a bot",
+      validate: value => (!emailPattern.test(value) ? 'Invalid email' : true),
+    },
+  ])
 
-export const uploadCARWithUCAN = async (car: Blob, provider: StorageProvider) => {
+export const uploadCARWithUCAN = async (
+  car: Blob,
+  provider: StorageProvider
+) => {
   const client = await create()
   let globalConfig = await getGlobalFlashConfig()
   if (!globalConfig) {
@@ -90,18 +91,43 @@ export const uploadCARWithUCAN = async (car: Blob, provider: StorageProvider) =>
   return result
 }
 
-export const uploadCARWithApiToken = async (car: Blob, provider: StorageProvider) => {
+export const uploadCARWithApiToken = async (
+  car: Blob,
+  provider: StorageProvider
+) => {
+  const token = process.env.FLASH_IPFS_API_TOKEN
+  if (!token) {
+    console.error(kleur.red(`env variable "FLASH_IPFS_API_TOKEN" is not set`))
+    process.exit(1)
+  }
   if (['web3.storage', 'nft.storage'].includes(provider)) {
-    const token = process.env.FLASH_IPFS_API_TOKEN
-    if (!token) {
-      console.error(kleur.red(`env variable "FLASH_IPFS_API_TOKEN" is not set`))
+    const res = await fetch(
+      `https://api.${
+        provider === 'nft.storage' ? 'nft.storage/upload' : 'web3.storage/car'
+      }`,
+      {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+        body: car,
+      }
+    )
+    const json = await res.json()
+    if (!res.ok) {
+      console.error(kleur.red(`Error: ${json.message}`))
       process.exit(1)
     }
-    const res = await fetch(`https://api.${provider === 'nft.storage' ? 'nft.storage/upload' : 'web3.storage/car'}`, {
-      method: 'POST',
+
+    return json.cid
+  } else if (provider === 'estuary.tech') {
+    const res = await fetch('https://api.estuary.tech/content/add-car', {
       headers: {
-        'Authorization': `Bearer ${token}`
+        'Content-Type': 'application/json',
+        Accept: 'application/json',
+        Authorization: `Bearer ${token}`,
       },
+      method: 'POST',
       body: car,
     })
     const json = await res.json()
@@ -109,7 +135,7 @@ export const uploadCARWithApiToken = async (car: Blob, provider: StorageProvider
       console.error(kleur.red(`Error: ${json.message}`))
       process.exit(1)
     }
-    
+
     return json.cid
   } else {
     console.error(kleur.red(`Provider ${provider} is not yet supported`))

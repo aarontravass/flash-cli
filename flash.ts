@@ -46,9 +46,8 @@ const prompt = async (options?: prompts.Options) =>
                   value: 'web3.storage',
                 },
                 {
-                  title: 'Estuary (coming soon)',
+                  title: 'Estuary',
                   value: 'estuary.tech',
-                  disabled: true,
                 },
                 {
                   title: 'Filebase (coming soon)',
@@ -92,15 +91,17 @@ cli
         config = result as Config
       }
     }
-    
+
     const folder = await getProjectOutputs(dir || config.output)
-    
+
     measureDeploymentSpeed(async () => {
       if (config.protocol === 'ipfs') {
         await deployToIpfs(folder, config)
       }
-      if (await exists('web3-functions') && !options.static) {
-        const deployFunctions = await import('./api/functions.js').then(m => m.deployFunctions)
+      if ((await exists('web3-functions')) && !options.static) {
+        const deployFunctions = await import('./api/functions.js').then(
+          m => m.deployFunctions
+        )
         await deployFunctions()
       }
     })
@@ -125,25 +126,27 @@ cli
 cli
   .command('ci', 'Deploy a project on Flash in a CI/CD environment')
   .option('-s, --static', 'Only deploy static files, not API functions')
-  .action(async (options: {static: boolean}) => {
+  .action(async (options: { static: boolean }) => {
     let config!: Config
     try {
       config = JSON.parse(await readTextFile('flash.json'))
     } catch (e) {
-      if (e.syscall === 'open') throw new Error('Project is not initialized: flash.json is missing')
+      if (e.syscall === 'open')
+        throw new Error('Project is not initialized: flash.json is missing')
     }
     const folder = await getProjectOutputs(config.output)
     measureDeploymentSpeed(async () => {
       if (config.protocol === 'ipfs') {
         await deployToIpfs(folder, config, true)
       }
-      if (await exists('web3-functions') && !options.static) {
-        const deployFunctions = await import('./api/functions.js').then(m => m.deployFunctions)
+      if ((await exists('web3-functions')) && !options.static) {
+        const deployFunctions = await import('./api/functions.js').then(
+          m => m.deployFunctions
+        )
         await deployFunctions()
       }
     })
-})
-
+  })
 
 cli.version(pkg.version)
 cli.help()

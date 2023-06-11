@@ -19,7 +19,7 @@ npm i -g @flash-dev/cli
 ```sh
 pnpm install && pnpm compile
 pnpm link --global
-flash # ready to be used
+flash
 ```
 
 ## Ecosystem
@@ -37,7 +37,7 @@ Supported providers:
 - IPFS
   - nft.storage
   - web3.storage
-  - Estuary (WIP)
+  - Estuary
   - Filebase (WIP)
 - Arweave
   - Bundlr (WIP) 

@@ -1,6 +1,8 @@
-import kleur from "kleur"
+import kleur from 'kleur'
 
-export const measureDeploymentSpeed = async (fn: () => void | Promise<void>) => {
+export const measureDeploymentSpeed = async (
+  fn: () => void | Promise<void>
+) => {
   const then = performance.now()
   await fn()
 
