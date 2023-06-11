@@ -20,6 +20,20 @@ pnpm link --global
 flash
 ```
 
+## Usage
+
+### `flash init`
+
+Initialize a new project in a selected directory (current by default)
+
+### `flash`
+
+Initialize (if not yet) and deploy a project with Flash.
+
+### `flash ci`
+
+Deploy project in a CI environment.
+
 ## Ecosystem
 
 Supported frameworks:
