@@ -14,7 +14,7 @@ export const deployWeb3Function = async (name: string, path: string) => {
     })
     if (res.ok) {
       const { tx, taskId } = await res.json()
-      console.log(`Success! ${name}-${taskId} -> ${tx.hash}`)
+      console.table({ name, taskId, txHash: tx.hash })
     } else {
       const err = await res.text()
       if (err.includes('Automate.createTask: Duplicate task'))

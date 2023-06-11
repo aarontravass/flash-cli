@@ -1,17 +1,7 @@
 import { Web3Function } from '@gelatonetwork/web3-functions-sdk'
-import { db } from '../../lib/db.js'
+import { db, initDb } from '../../lib/db.js'
 
-await db.applySchema(`
-  @public
-  collection Dino {
-    id: string;
-    name: string;
-    constructor (id: string, name: string) {
-      this.id = id;
-      this.name = name;
-    }
-  }
-`)
+await initDb()
 
 Web3Function.onRun(async ({ storage, multiChainProvider }) => {
   const lastBlock = parseInt((await storage.get('lastBlockNumber')) ?? '0')
@@ -24,6 +14,11 @@ Web3Function.onRun(async ({ storage, multiChainProvider }) => {
   )
   if (!res.ok) return { canExec: false, message: `Failed to get a dino` }
   const dino = (await res.text()).trim()
-  await db.collection('Dino').create([newBlock.toString(), dino])
+  const coll = db.collection('Dinosaur')
+  const records = await coll.get()
+  if (records.data.length > 50) {
+    for (const rec of records.data) await rec.call('del')
+  }
+  await coll.create([newBlock.toString(), dino])
   return { canExec: true, message: `Saved dino ${dino}`, callData: [] }
 })

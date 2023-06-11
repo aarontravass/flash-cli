@@ -1,13 +1,14 @@
 import { useEffect, useState } from 'react'
-import { db } from '../lib/db.js'
+import { db, initDb } from '../lib/db.js'
 import styles from './index.module.css'
 
 export default function Home() {
   const [dinos, setDinos] = useState([])
 
   useEffect(() => {
-    const coll = db.collection('Dino')
+    const coll = db.collection('Dinosaur')
     async function run() {
+      await initDb()
       const { data } = await coll.get()
       setDinos(data.map((x) => x.data))
     }
