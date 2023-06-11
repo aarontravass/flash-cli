@@ -9,8 +9,8 @@ export type DID = `did:key:${string}`
 export type Email = `${string}@${string}`
 
 export type Config = {
-  storage: string | 'IPFS'
-  service: PinningService
+  protocol: 'ipfs'
+  provider: StorageProvider
   output?: string
 }
 
@@ -19,7 +19,7 @@ export type GlobalConfig = {
   did: DID
 }
 
-export type PinningService =
+export type StorageProvider =
   | 'nft.storage'
   | 'web3.storage'
   | 'estuary.tech'

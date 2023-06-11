@@ -1,7 +1,8 @@
 import { readFile } from 'node:fs/promises'
 import { exists } from './fs.js'
+import kleur from 'kleur'
 
-export const detectFramework = async () => {
+const detectFramework = async () => {
   if (await exists('_config.ts')) return 'Lume'
   else if ((await exists('.next')) || (await exists('next.config.js'))) {
     return 'Next.js'
@@ -12,10 +13,10 @@ export const detectFramework = async () => {
 
 /**
  * @param {string} framework
- * @param {string?} def
+ * @param {string?} defined
  */
-export const getOutputFolder = async (framework?: string, def?: string) => {
-  if (!def) {
+const getOutputFolder = async (framework?: string, defined?: string) => {
+  if (!defined) {
     switch (framework) {
       case 'Next.js':
         return 'out'
@@ -26,5 +27,19 @@ export const getOutputFolder = async (framework?: string, def?: string) => {
       default:
         return '.'
     }
-  } else return def
+  } else return defined
+}
+
+export const getProjectOutputs = async (defined?: string) => {
+  const framework = await detectFramework()
+  const folder = await getOutputFolder(framework, defined)
+
+  console.log(
+    kleur.cyan(
+      framework
+        ? `Detected framework: ${framework}`
+        : `Uploading static files`
+    )
+  )
+  return folder
 }

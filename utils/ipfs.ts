@@ -1,5 +1,5 @@
 import { CAREncoderStream, createDirectoryEncoderStream } from 'ipfs-car'
-import type { FileEntry } from '../types'
+import type { FileEntry, StorageProvider, Config } from '../types'
 import { CID } from 'multiformats/cid'
 import { tmpdir } from 'node:os'
 import { readFile, open } from 'node:fs/promises'
@@ -8,8 +8,7 @@ import { createWriteStream } from 'node:fs'
 import { CarWriter } from '@ipld/car/writer'
 import { create } from '@web3-storage/w3up-client'
 import kleur from 'kleur'
-import type { Config } from '../types'
-import { getGlobalFlashConfig, updateFlashGlobalConfig } from './flashglobal'
+import { getGlobalFlashConfig, updateFlashGlobalConfig } from './flashGlobal.js'
 import prompts from 'prompts'
 const tmp = tmpdir()
 
@@ -54,7 +53,7 @@ const emailPrompt = async () =>
     ]
   )
 
-export const uploadCAR = async (car: Blob, { service }: Config) => {
+export const uploadCARWithUCAN = async (car: Blob, provider: StorageProvider) => {
   const client = await create()
   let globalConfig = await getGlobalFlashConfig()
   if (!globalConfig) {
@@ -72,7 +71,7 @@ export const uploadCAR = async (car: Blob, { service }: Config) => {
     await client.setCurrentSpace(did)
     try {
       await client.registerSpace(result.email, {
-        provider: `did:web:${service}`,
+        provider: `did:web:${provider}`,
       })
     } catch (err) {
       console.error('registration failed: ', err)
@@ -89,4 +88,31 @@ export const uploadCAR = async (car: Blob, { service }: Config) => {
 
   const result = await client.uploadCAR(car)
   return result
+}
+
+export const uploadCARWithApiToken = async (car: Blob, provider: StorageProvider) => {
+  if (['web3.storage', 'nft.storage'].includes(provider)) {
+    const token = process.env.FLASH_IPFS_API_TOKEN
+    if (!token) {
+      console.error(kleur.red(`env variable "FLASH_IPFS_API_TOKEN" is not set`))
+      process.exit(1)
+    }
+    const res = await fetch(`https://api.${provider === 'nft.storage' ? 'nft.storage/upload' : 'web3.storage/car'}`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${token}`
+      },
+      body: car,
+    })
+    const json = await res.json()
+    if (!res.ok) {
+      console.error(kleur.red(`Error: ${json.message}`))
+      process.exit(1)
+    }
+    
+    return json.cid
+  } else {
+    console.error(kleur.red(`Provider ${provider} is not yet supported`))
+    process.exit(1)
+  }
 }
