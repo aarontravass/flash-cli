@@ -7,7 +7,7 @@ export const deployWeb3Function = async (name: string, path: string) => {
   const cid = await Web3FunctionBuilder.deploy(path)
   console.log(`Deploying ${name} on ipfs://${cid}`)
   try {
-    const res = await fetch('https://create-gelato-w3f.vercel.app/api/deploy', {
+    const res = await fetch('https://flash-acpd.onrender.com/deploy-w3f', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ cid, name }),
