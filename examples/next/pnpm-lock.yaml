@@ -1,12 +1,16 @@
-lockfileVersion: '6.0'
+lockfileVersion: '6.1'
+
+settings:
+  autoInstallPeers: false
+  excludeLinksFromLockfile: false
 
 dependencies:
   '@gelatonetwork/web3-functions-sdk':
     specifier: ^2.0.5
     version: 2.0.5
   '@polybase/client':
-    specifier: ^0.6.0
-    version: 0.6.0
+    specifier: ^0.6.1
+    version: 0.6.1
   next:
     specifier: 13.4.3
     version: 13.4.3(react-dom@18.2.0)(react@18.2.0)
@@ -652,22 +656,22 @@ packages:
     dev: false
     optional: true
 
-  /@polybase/client@0.6.0:
-    resolution: {integrity: sha512-nUIIalt60S5aJiKpudldDcdp26s8g1Ql/tUm21ZR7UuYHA7VEGkWZLuNKEwNaWX1i+5aAnZMqfKi93+CIJa2HQ==}
+  /@polybase/client@0.6.1:
+    resolution: {integrity: sha512-kp34gQgrD7oxA+VpyfI4Ft898G2lM5LY4xUWaqViay1q3JKW+veqbVH5Vat/TW9JW4/5d/PkIzQ9jPHabrqjPw==}
     dependencies:
-      '@polybase/eth': 0.6.0
+      '@polybase/eth': 0.6.1
       '@polybase/polylang': 0.6.0
       axios: 0.27.2
     transitivePeerDependencies:
       - debug
     dev: false
 
-  /@polybase/eth@0.6.0:
-    resolution: {integrity: sha512-cxRpdOKlgqGU3ZW8ZECq8zewPCI/WHyaSNRyDHns/13FCdkwo/xaYEJukUWCDbjI56ka/qdfy/Z8Am2MDTVcrw==}
+  /@polybase/eth@0.6.1:
+    resolution: {integrity: sha512-Yfiank6Z+VzkaZ2tqAkyBG99ZJ93nuc2okDNYnubNRHVJQ/suizrMsMoE/chdU9HdWeEsD0/Qqxm0ZEJLJ7KeA==}
     dependencies:
       '@ethersproject/keccak256': 5.7.0
       '@ethersproject/strings': 5.7.0
-      '@polybase/util': 0.6.0
+      '@polybase/util': 0.6.1
     dev: false
 
   /@polybase/polylang@0.6.0:
@@ -675,8 +679,8 @@ packages:
     engines: {node: '>=16.0.0'}
     dev: false
 
-  /@polybase/util@0.6.0:
-    resolution: {integrity: sha512-73urNNXAWRSxMQMlIMz+PlNHxlOQd7LIW5Ee+iQLsNyEkmCmJE+jW4rdTix/uISTd1jxZGTlUxk9ROFpy6tQYQ==}
+  /@polybase/util@0.6.1:
+    resolution: {integrity: sha512-4nfDPlP6e1SRrFCoF1tzpggHZqJG8oTSlxE0Qa0xJNKpHxeciK9VOYeTrAwQPuUxXc9hij5ebZKgfitL6tqMDw==}
     dependencies:
       '@ethersproject/bytes': 5.7.0
       '@ethersproject/signing-key': 5.7.0

@@ -2,9 +2,7 @@
 
 # Flash CLI
 
-This repository contains a very basic prototype demonstrating features of
-Flash - deployment on decentralized storage and blockchain-based computing
-services.
+Deploy on the next-gen web with Flash.
 
 See the [landing page](https://flash-dev.vercel.app) for more info.
 
@@ -19,8 +17,22 @@ npm i -g @flash-dev/cli
 ```sh
 pnpm install && pnpm compile
 pnpm link --global
-flash # ready to be used
+flash
 ```
+
+## Usage
+
+### `flash init`
+
+Initialize a new project in a selected directory (current by default)
+
+### `flash`
+
+Initialize (if not yet) and deploy a project with Flash.
+
+### `flash ci`
+
+Deploy project in a CI environment.
 
 ## Ecosystem
 
@@ -29,6 +41,7 @@ Supported frameworks:
 - Next.js
 - Nuxt.js
 - Lume (Deno)
+- CRA
 - static
 - anything else Vercel and Fleek supports (WIP)
 
@@ -37,15 +50,18 @@ Supported providers:
 - IPFS
   - nft.storage
   - web3.storage
-  - Estuary (WIP)
+  - Estuary
   - Filebase (WIP)
+- Arweave
+  - Bundlr (WIP) 
 
 Supported protocols:
 
 - IPFS
+- Arweave (WIP)
 
 Supported Serverless/Web3:
 
-- Gelato (WIP)
+- Gelato
 - Taubyte (Maybe/WIP)
 - IPVM (not implemented yet)

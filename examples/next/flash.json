@@ -1,4 +1,4 @@
 {
-  "storage": "ipfs",
-  "service": "web3.storage"
+  "protocol": "ipfs",
+  "provider": "estuary.tech"
 }

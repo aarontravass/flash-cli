@@ -9,8 +9,10 @@ let ignored: string[] = []
 export async function* walk(dir: string) {
   if (!ignored.length) {
     try {
-      ignored = ((await readFile('.gitignore')).toString()).split('\n')
-    } catch {}
+      ignored = (await readFile('.gitignore')).toString().split('\n')
+    } catch {
+      /* empty */
+    }
   }
   for await (const d of await opendir(dir)) {
     if (!ignored.includes(d.name)) {
@@ -21,11 +23,11 @@ export async function* walk(dir: string) {
   }
 }
 
-export function fileSize(bytes: number, si = false, dp = 1): string {
+export function fileSize(bytes: number, si = true, dp = 1): string {
   const thresh = si ? 1000 : 1024
 
   if (Math.abs(bytes) < thresh) {
-    return bytes + ' B'
+    return bytes + 'B'
   }
 
   const units = si
@@ -36,12 +38,13 @@ export function fileSize(bytes: number, si = false, dp = 1): string {
 
   do {
     bytes /= thresh
-    ;++u
+    ++u
   } while (
-    Math.round(Math.abs(bytes) * r) / r >= thresh && u < units.length - 1
+    Math.round(Math.abs(bytes) * r) / r >= thresh &&
+    u < units.length - 1
   )
 
-  return bytes.toFixed(dp) + ' ' + units[u]
+  return bytes.toFixed(dp) + units[u]
 }
 
 /**
@@ -57,14 +60,10 @@ export const exists = async (file: string) => {
   }
 }
 
-export const dirData = async (
-  dir: string,
-) => {
+export const dirData = async (dir: string) => {
   let total = 0
   const files: FileEntry[] = []
-  for await (
-    const path of walk(dir)
-  ) {
+  for await (const path of walk(dir)) {
     const size = (await stat(path)).size
     total += size
     files.push({

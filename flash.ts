@@ -1,92 +1,115 @@
+#! /usr/bin/env node
+
 import { cac } from 'cac'
 import prompts from 'prompts'
 import { mkdir, writeFile } from 'node:fs/promises'
 import kleur from 'kleur'
-import { deployFunctions } from './api/functions.js'
 import { deployToIpfs } from './api/static.js'
 import { exists, readTextFile } from './utils/fs.js'
-import { detectFramework, getOutputFolder } from './utils/detect.js'
+import { getProjectOutputs } from './utils/detect.js'
 import { Config } from './types.js'
+import pkg from './package.json' assert { type: 'json' }
+import { measureDeploymentSpeed } from './utils/perf.js'
 
-const prompt = async () =>
-  await prompts([
-    {
-      name: 'storage',
-      message: 'Storage Provider',
-      type: 'select',
-      choices: [{
-        title: 'IPFS',
-        value: 'ipfs',
-      }],
-    },
-    {
-      name: 'service',
-      message: 'Pinning Service',
-      type: 'select',
-      choices: [{
-        title: 'nft.storage',
-        value: 'nft.storage',
-      }, {
-        title: 'web3.storage',
-        value: 'web3.storage'
-      }, {
-        title: 'Estuary (coming soon)',
-        value: 'estuary.tech',
-        disabled: true,
-      }, {
-        title: 'Filebase (coming soon)',
-        value: 'filebase.com',
-        disabled: true,
-      }],
-    },
-  ])
+const prompt = async (options?: prompts.Options) =>
+  await prompts(
+    [
+      {
+        name: 'protocol',
+        message: 'Storage Provider',
+        type: 'select',
+        choices: [
+          {
+            title: 'IPFS',
+            value: 'ipfs',
+          },
+          {
+            title: 'Arweave',
+            value: 'arweave',
+            disabled: true,
+          },
+        ],
+      },
+      {
+        name: 'provider',
+        message: 'Storage Provider',
+        type: 'select',
+        choices: args =>
+          args === 'ipfs'
+            ? [
+                {
+                  title: 'nft.storage',
+                  value: 'nft.storage',
+                },
+                {
+                  title: 'web3.storage',
+                  value: 'web3.storage',
+                },
+                {
+                  title: 'Estuary',
+                  value: 'estuary.tech',
+                },
+                {
+                  title: 'Filebase (coming soon)',
+                  value: 'filebase.com',
+                  disabled: true,
+                },
+              ]
+            : [
+                {
+                  title: 'Bundlr (coming soon)',
+                  value: 'bundlr.network',
+                  disabled: true,
+                },
+              ],
+      },
+    ],
+    options
+  )
 
 const cli = cac('flash')
 
 cli
   .command(
     '[dir]',
-    'Deploy Deploy websites and apps on the new decentralized stack.',
+    'Deploy Deploy websites and apps on the new decentralized stack.'
   )
-  .action(async (dir) => {
-    let config: Config = { storage: 'IPFS', service: 'nft.storage' }
+  .option('-s, --static', 'Only deploy static files, not API functions')
+  .action(async (dir, options) => {
+    let config: Config = {
+      protocol: 'ipfs',
+      provider: 'nft.storage',
+    }
     try {
       config = JSON.parse(await readTextFile('flash.json'))
     } catch (e) {
       if (e.syscall === 'open') {
         const result = await prompt()
+        if (!result.protocol || !result.provider) return process.exit(0)
 
         await writeFile('flash.json', JSON.stringify(result, null, 2))
-        config = result
+        config = result as Config
       }
     }
-    const framework = await detectFramework()
-    const folder = await getOutputFolder(framework, dir || config.output)
-    console.log(
-      kleur.cyan(
-        framework
-          ? `Detected framework: ${framework}`
-          : `Uploading static files`,
-      ),
-    )
-    const then = performance.now()
-    if (config.storage === 'ipfs') {
-      await deployToIpfs(folder, config)
-    }
-    if (await exists('web3-functions')) {
-      await deployFunctions()
-    }
-    try {
-      console.log(
-        `Deployed in ${((performance.now() - then) / 1000).toFixed(3)}s ✨`,
-      )
-    } catch (e) {
-      console.error(kleur.red(e.message))
-    }
+
+    const folder = await getProjectOutputs(dir || config.output)
+
+    measureDeploymentSpeed(async () => {
+      if (config.protocol === 'ipfs') {
+        await deployToIpfs(folder, config)
+      }
+      if ((await exists('web3-functions')) && !options.static) {
+        const deployFunctions = await import('./api/functions.js').then(
+          m => m.deployFunctions
+        )
+        await deployFunctions()
+      }
+    })
   })
 
-cli.command('init [dir]', 'Initialize a new Flash project').action(
-  async (dir) => {
+cli
+  .command('init [dir]', 'Initialize a new Flash project')
+  .action(async dir => {
     if (dir) {
       await mkdir(dir)
       process.chdir(dir)
@@ -96,10 +119,35 @@ cli.command('init [dir]', 'Initialize a new Flash project').action(
     }
 
     const result = await prompt()
-
     await writeFile('flash.json', JSON.stringify(result, null, 2))
     console.log(kleur.cyan('✅ Successfully initialized new project'))
-  },
-)
+  })
+
+cli
+  .command('ci', 'Deploy a project on Flash in a CI/CD environment')
+  .option('-s, --static', 'Only deploy static files, not API functions')
+  .action(async (options: { static: boolean }) => {
+    let config!: Config
+    try {
+      config = JSON.parse(await readTextFile('flash.json'))
+    } catch (e) {
+      if (e.syscall === 'open')
+        throw new Error('Project is not initialized: flash.json is missing')
+    }
+    const folder = await getProjectOutputs(config.output)
+    measureDeploymentSpeed(async () => {
+      if (config.protocol === 'ipfs') {
+        await deployToIpfs(folder, config, true)
+      }
+      if ((await exists('web3-functions')) && !options.static) {
+        const deployFunctions = await import('./api/functions.js').then(
+          m => m.deployFunctions
+        )
+        await deployFunctions()
+      }
+    })
+  })
+
+cli.version(pkg.version)
 cli.help()
 cli.parse()
