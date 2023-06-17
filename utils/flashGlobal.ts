@@ -12,10 +12,10 @@ export async function getGlobalFlashConfig() {
   const flashGlobalPath = `${homePath}/.config/flash-global.json`
   const configExists = await exists(flashGlobalPath)
   if (configExists) {
-    const globalConfig = JSON.parse(await readTextFile(flashGlobalPath))
+    const globalConfig = <GlobalConfig>JSON.parse(await readTextFile(flashGlobalPath))
     return globalConfig
   }
-  return configExists
+  return null
 }
 
 export async function updateFlashGlobalConfig(config: GlobalConfig) {

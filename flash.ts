@@ -7,9 +7,11 @@ import kleur from 'kleur'
 import { deployToIpfs } from './api/static.js'
 import { exists, readTextFile } from './utils/fs.js'
 import { getProjectOutputs } from './utils/detect.js'
-import { Config } from './types.js'
+import { Config, GlobalConfig } from './types.js'
 import pkg from './package.json' assert { type: 'json' }
 import { measureDeploymentSpeed } from './utils/perf.js'
+import { createIPNS, updateIPNS, verifyIPNS } from './utils/ipns.js'
+import { getGlobalFlashConfig } from './utils/flashGlobal.js'
 
 const prompt = async (options?: prompts.Options) =>
   await prompts(
@@ -34,37 +36,37 @@ const prompt = async (options?: prompts.Options) =>
         name: 'provider',
         message: 'Storage Provider',
         type: 'select',
-        choices: args =>
+        choices: (args) =>
           args === 'ipfs'
             ? [
-                {
-                  title: 'nft.storage',
-                  value: 'nft.storage',
-                },
-                {
-                  title: 'web3.storage',
-                  value: 'web3.storage',
-                },
-                {
-                  title: 'Estuary',
-                  value: 'estuary.tech',
-                },
-                {
-                  title: 'Filebase (coming soon)',
-                  value: 'filebase.com',
-                  disabled: true,
-                },
-              ]
+              {
+                title: 'nft.storage',
+                value: 'nft.storage',
+              },
+              {
+                title: 'web3.storage',
+                value: 'web3.storage',
+              },
+              {
+                title: 'Estuary',
+                value: 'estuary.tech',
+              },
+              {
+                title: 'Filebase (coming soon)',
+                value: 'filebase.com',
+                disabled: true,
+              },
+            ]
             : [
-                {
-                  title: 'Bundlr (coming soon)',
-                  value: 'bundlr.network',
-                  disabled: true,
-                },
-              ],
+              {
+                title: 'Bundlr (coming soon)',
+                value: 'bundlr.network',
+                disabled: true,
+              },
+            ],
       },
     ],
-    options
+    options,
   )
 
 const cli = cac('flash')
@@ -72,7 +74,7 @@ const cli = cac('flash')
 cli
   .command(
     '[dir]',
-    'Deploy Deploy websites and apps on the new decentralized stack.'
+    'Deploy Deploy websites and apps on the new decentralized stack.',
   )
   .option('-s, --static', 'Only deploy static files, not API functions')
   .action(async (dir, options) => {
@@ -100,7 +102,7 @@ cli
       }
       if ((await exists('web3-functions')) && !options.static) {
         const deployFunctions = await import('./api/functions.js').then(
-          m => m.deployFunctions
+          (m) => m.deployFunctions,
         )
         await deployFunctions()
       }
@@ -109,7 +111,7 @@ cli
 
 cli
   .command('init [dir]', 'Initialize a new Flash project')
-  .action(async dir => {
+  .action(async (dir) => {
     if (dir) {
       await mkdir(dir)
       process.chdir(dir)
@@ -131,8 +133,9 @@ cli
     try {
       config = JSON.parse(await readTextFile('flash.json'))
     } catch (e) {
-      if (e.syscall === 'open')
+      if (e.syscall === 'open') {
         throw new Error('Project is not initialized: flash.json is missing')
+      }
     }
     const folder = await getProjectOutputs(config.output)
     measureDeploymentSpeed(async () => {
@@ -141,11 +144,39 @@ cli
       }
       if ((await exists('web3-functions')) && !options.static) {
         const deployFunctions = await import('./api/functions.js').then(
-          m => m.deployFunctions
+          (m) => m.deployFunctions,
         )
         await deployFunctions()
       }
     })
+  })
+
+cli
+  .command('ipns <type>', 'Create, Delete or Verify a IPNS key')
+  .action(async (type: string) => {
+    let config!: GlobalConfig | null
+    try {
+      config = await getGlobalFlashConfig()
+    } catch (e) {
+      if (e.syscall === 'open') {
+        throw new Error('Config file is missing')
+      }
+    }
+    switch (type.toLowerCase()) {
+      case 'create':
+        await createIPNS(config as GlobalConfig)
+        break
+      case 'delete':
+        await updateIPNS(config as GlobalConfig)
+        break
+      case 'verify':
+        await verifyIPNS(config as GlobalConfig)
+        break
+      default:
+        throw new Error(
+          'type should be one of the following: create, delete or verify',
+        )
+    }
   })
 
 cli.version(pkg.version)
