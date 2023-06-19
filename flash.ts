@@ -10,7 +10,7 @@ import { getProjectOutputs } from './utils/detect.js'
 import { Config, GlobalConfig } from './types.js'
 import pkg from './package.json' assert { type: 'json' }
 import { measureDeploymentSpeed } from './utils/perf.js'
-import { createIPNS, updateIPNS, verifyIPNS } from './utils/ipns.js'
+import { createIPNS, verifyIPNS } from './utils/ipns.js'
 import { getGlobalFlashConfig } from './utils/flashGlobal.js'
 
 const prompt = async (options?: prompts.Options) =>
@@ -152,7 +152,7 @@ cli
   })
 
 cli
-  .command('ipns <type>', 'Create, Delete or Verify a IPNS key')
+  .command('ipns <type>', 'Create or Verify a IPNS key')
   .action(async (type: string) => {
     let config!: GlobalConfig | null
     try {
@@ -166,15 +166,12 @@ cli
       case 'create':
         await createIPNS(config as GlobalConfig)
         break
-      case 'delete':
-        await updateIPNS(config as GlobalConfig)
-        break
       case 'verify':
         await verifyIPNS(config as GlobalConfig)
         break
       default:
         throw new Error(
-          'type should be one of the following: create, delete or verify',
+          'type should be one of the following: create or verify',
         )
     }
   })

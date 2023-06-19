@@ -80,7 +80,7 @@ export const uploadCARWithUCAN = async (
 
     globalConfig = {
       email: result.email,
-      did: did,
+      did: did
     }
     await updateFlashGlobalConfig(globalConfig)
   } else {
