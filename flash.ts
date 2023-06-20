@@ -169,10 +169,6 @@ cli
       case 'verify':
         await verifyIPNS(config as GlobalConfig)
         break
-      default:
-        throw new Error(
-          'type should be one of the following: create or verify',
-        )
     }
   })
 
