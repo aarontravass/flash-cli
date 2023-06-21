@@ -23,7 +23,9 @@
   "scripts": {
     "build": "esbuild flash.ts --platform=node --packages=external --bundle --outdir=dist --target=node18 --format=esm",
     "format": "prettier --check \"./**/*.{ts,md}\"",
-    "format:fix": "prettier --write \"./**/*.{ts,md}\""
+    "format:fix": "prettier --write \"./**/*.{ts,md}\"",
+    "lint": "eslint --no-error-on-unmatched-pattern . --ext=ts",
+    "lint:fix": "eslint --no-error-on-unmatched-pattern . --ext=ts --fix"
   },
   "devDependencies": {
     "@commitlint/cli": "^17.6.5",
