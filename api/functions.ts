@@ -10,7 +10,7 @@ export const deployWeb3Function = async (name: string, path: string) => {
     const res = await fetch('https://flash-acpd.onrender.com/deploy-w3f', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ cid, name }),
+      body: JSON.stringify({ cid, name })
     })
     if (res.ok) {
       const { tx, taskId } = await res.json()

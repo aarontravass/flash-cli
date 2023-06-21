@@ -21,7 +21,9 @@
     "dist"
   ],
   "scripts": {
-    "build": "esbuild flash.ts --platform=node --packages=external --bundle --outdir=dist --target=node18 --format=esm"
+    "build": "esbuild flash.ts --platform=node --packages=external --bundle --outdir=dist --target=node18 --format=esm",
+    "format": "prettier --check \"./**/*.{ts,md}\"",
+    "format:fix": "prettier --write \"./**/*.{ts,md}\""
   },
   "devDependencies": {
     "@commitlint/cli": "^17.6.5",

@@ -53,7 +53,7 @@ Supported providers:
   - Estuary
   - Filebase (WIP)
 - Arweave
-  - Bundlr (WIP) 
+  - Bundlr (WIP)
 
 Supported protocols:
 

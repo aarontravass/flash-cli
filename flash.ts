@@ -161,9 +161,11 @@ cli
         await createIPNS(ipns_value)
         break
       case 'verify':
-        if(ipns_value) {
-          console.error("IPNS value is taken from config and should not be supplied via cmd")
-          process.exit(1);
+        if (ipns_value) {
+          console.error(
+            'IPNS value is taken from config and should not be supplied via cmd'
+          )
+          process.exit(1)
         }
         try {
           config = await getGlobalFlashConfig()

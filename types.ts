@@ -8,7 +8,7 @@ export type DID = `did:${string}:${string}`
 
 export type Email = `${string}@${string}`
 
-export type W3NameKeyValue = { privKey: string, value: string }
+export type W3NameKeyValue = { privKey: string; value: string }
 
 export type Config = {
   protocol: 'ipfs'
