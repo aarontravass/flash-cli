@@ -23,50 +23,50 @@ const prompt = async (options?: prompts.Options) =>
         choices: [
           {
             title: 'IPFS',
-            value: 'ipfs',
+            value: 'ipfs'
           },
           {
             title: 'Arweave',
             value: 'arweave',
-            disabled: true,
-          },
-        ],
+            disabled: true
+          }
+        ]
       },
       {
         name: 'provider',
         message: 'Storage Provider',
         type: 'select',
-        choices: (args) =>
+        choices: args =>
           args === 'ipfs'
             ? [
-              {
-                title: 'nft.storage',
-                value: 'nft.storage',
-              },
-              {
-                title: 'web3.storage',
-                value: 'web3.storage',
-              },
-              {
-                title: 'Estuary',
-                value: 'estuary.tech',
-              },
-              {
-                title: 'Filebase (coming soon)',
-                value: 'filebase.com',
-                disabled: true,
-              },
-            ]
+                {
+                  title: 'nft.storage',
+                  value: 'nft.storage'
+                },
+                {
+                  title: 'web3.storage',
+                  value: 'web3.storage'
+                },
+                {
+                  title: 'Estuary',
+                  value: 'estuary.tech'
+                },
+                {
+                  title: 'Filebase (coming soon)',
+                  value: 'filebase.com',
+                  disabled: true
+                }
+              ]
             : [
-              {
-                title: 'Bundlr (coming soon)',
-                value: 'bundlr.network',
-                disabled: true,
-              },
-            ],
-      },
+                {
+                  title: 'Bundlr (coming soon)',
+                  value: 'bundlr.network',
+                  disabled: true
+                }
+              ]
+      }
     ],
-    options,
+    options
   )
 
 const cli = cac('flash')
@@ -74,13 +74,13 @@ const cli = cac('flash')
 cli
   .command(
     '[dir]',
-    'Deploy Deploy websites and apps on the new decentralized stack.',
+    'Deploy Deploy websites and apps on the new decentralized stack.'
   )
   .option('-s, --static', 'Only deploy static files, not API functions')
   .action(async (dir, options) => {
     let config: Config = {
       protocol: 'ipfs',
-      provider: 'nft.storage',
+      provider: 'nft.storage'
     }
     try {
       config = JSON.parse(await readTextFile('flash.json'))
@@ -102,7 +102,7 @@ cli
       }
       if ((await exists('web3-functions')) && !options.static) {
         const deployFunctions = await import('./api/functions.js').then(
-          (m) => m.deployFunctions,
+          m => m.deployFunctions
         )
         await deployFunctions()
       }
@@ -111,7 +111,7 @@ cli
 
 cli
   .command('init [dir]', 'Initialize a new Flash project')
-  .action(async (dir) => {
+  .action(async dir => {
     if (dir) {
       await mkdir(dir)
       process.chdir(dir)
@@ -144,7 +144,7 @@ cli
       }
       if ((await exists('web3-functions')) && !options.static) {
         const deployFunctions = await import('./api/functions.js').then(
-          (m) => m.deployFunctions,
+          m => m.deployFunctions
         )
         await deployFunctions()
       }
@@ -152,21 +152,39 @@ cli
   })
 
 cli
-  .command('ipns <type>', 'Create or Verify a IPNS key')
-  .action(async (type: string) => {
+  .command('ipns <action> [ipns_value]', 'Create or Verify a IPNS key')
+  .action(async (action: string, ipns_value?: string) => {
     let config!: GlobalConfig | null
-    try {
-      config = await getGlobalFlashConfig()
-    } catch (e) {
-      if (e.syscall === 'open') {
-        throw new Error('Config file is missing')
-      }
-    }
-    switch (type.toLowerCase()) {
+
+    switch (action.toLowerCase()) {
       case 'create':
-        await createIPNS(config as GlobalConfig)
+        await createIPNS(ipns_value)
         break
       case 'verify':
+        if(ipns_value) {
+          console.error("IPNS value is taken from config and should not be supplied via cmd")
+          process.exit(1);
+        }
+        try {
+          config = await getGlobalFlashConfig()
+        } catch (e) {
+          if (e.syscall === 'open') {
+            throw new Error('Config file is missing')
+          }
+          if (process.env.FLASH_W3NAME_PK) {
+            config = {
+              W3NameKV: {
+                privKey: process.env.FLASH_W3NAME_PK,
+                value: ipns_value || ''
+              },
+              did: undefined,
+              email: undefined
+            }
+          } else {
+            console.error('No config can be found')
+            process.exit(1)
+          }
+        }
         await verifyIPNS(config as GlobalConfig)
         break
     }

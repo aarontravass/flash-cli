@@ -19,7 +19,7 @@ export type Config = {
 export type GlobalConfig = {
   email?: Email
   did?: DID
-  w3namekv?: W3NameKeyValue
+  W3NameKV?: W3NameKeyValue
 }
 
 export type StorageProvider =
