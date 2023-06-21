@@ -152,16 +152,16 @@ cli
   })
 
 cli
-  .command('ipns <action> [ipns_value]', 'Create or Verify a IPNS key')
-  .action(async (action: string, ipns_value?: string) => {
+  .command('ipns <action> [ipnsValue]', 'Create or Verify a IPNS key')
+  .action(async (action: string, ipnsValue?: string) => {
     let config!: GlobalConfig | null
 
     switch (action.toLowerCase()) {
       case 'create':
-        await createIPNS(ipns_value)
+        await createIPNS(ipnsValue)
         break
       case 'verify':
-        if (ipns_value) {
+        if (ipnsValue) {
           console.error(
             'IPNS value is taken from config and should not be supplied via cmd'
           )
@@ -177,7 +177,7 @@ cli
             config = {
               W3NameKV: {
                 privKey: process.env.FLASH_W3NAME_PK,
-                value: ipns_value || ''
+                value: ipnsValue || ''
               },
               did: undefined,
               email: undefined

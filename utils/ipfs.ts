@@ -47,7 +47,7 @@ const emailPrompt = async () =>
       name: 'email',
       type: 'text',
       message: "Verify your email to confirm that you're not a bot",
-      validate: value => (!emailPattern.test(value) ? 'Invalid email' : true)
+      validate: value => emailPattern.test(value) ?? 'Invalid email'
     }
   ])
 
