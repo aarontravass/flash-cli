@@ -20,12 +20,12 @@ const createIPNS = async (ipnsValue: string | undefined) => {
   await updateFlashGlobalConfig(config as GlobalConfig)
 }
 
-const verifyIPNS = async (config: GlobalConfig) => {
+const verifyIPNS = async (config: GlobalConfig, ipnsValue: string) => {
   const privKey = config?.W3NameKV?.privKey
 
   const name = await Name.from(Uint8Array.from(Buffer.from(privKey!, 'hex')))
   const revision = await Name.resolve(name)
-  if (revision.value === config?.W3NameKV?.value) {
+  if (revision.value === ipnsValue) {
     console.log('Key/Value is vali!d')
   } else console.error('Key/Value is not valid')
 }

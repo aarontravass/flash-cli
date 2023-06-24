@@ -155,29 +155,25 @@ cli
   .command('ipns <action> [ipnsValue]', 'Create or Verify a IPNS key')
   .action(async (action: string, ipnsValue?: string) => {
     let config!: GlobalConfig | null
-
+    // precedence: options ipns > config ipns > env ipns
     switch (action.toLowerCase()) {
       case 'create':
         await createIPNS(ipnsValue)
         break
       case 'verify':
-        if (ipnsValue) {
-          console.error(
-            'IPNS value is taken from config and should not be supplied via cmd'
-          )
-          process.exit(1)
-        }
         try {
           config = await getGlobalFlashConfig()
+          ipnsValue = ipnsValue || config?.W3NameKV?.value
         } catch (e) {
           if (e.syscall === 'open') {
             throw new Error('Config file is missing')
           }
           if (process.env.FLASH_W3NAME_PK) {
+            ipnsValue = ipnsValue || process.env.FLASH_W3NAME_IPNS
             config = {
               W3NameKV: {
                 privKey: process.env.FLASH_W3NAME_PK,
-                value: ipnsValue || ''
+                value: ''
               },
               did: undefined,
               email: undefined
@@ -187,7 +183,11 @@ cli
             process.exit(1)
           }
         }
-        await verifyIPNS(config as GlobalConfig)
+        if (!ipnsValue) {
+          console.error('No ipnsValue can be found!')
+          process.exit(1)
+        }
+        await verifyIPNS(config as GlobalConfig, ipnsValue)
         break
     }
   })
