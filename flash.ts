@@ -153,42 +153,48 @@ cli
 
 cli
   .command('ipns <action> [ipnsValue]', 'Create or Verify a IPNS key')
-  .action(async (action: string, ipnsValue?: string) => {
+  .action((action: string, ipnsValue?: string) => {
     let config!: GlobalConfig | null
     // precedence: options ipns > config ipns > env ipns
-    switch (action.toLowerCase()) {
-      case 'create':
-        return await createIPNS(ipnsValue)
-      case 'verify':
-        try {
-          config = await getGlobalFlashConfig()
-          ipnsValue = ipnsValue || config?.W3NameKV?.value
-        } catch (e) {
-          if (e.syscall === 'open') {
-            throw new Error('Config file is missing')
-          }
-          if (process.env.FLASH_W3NAME_PK) {
-            ipnsValue = ipnsValue || process.env.FLASH_W3NAME_IPNS
-            config = {
-              W3NameKV: {
-                privKey: process.env.FLASH_W3NAME_PK,
-                value: ''
-              },
-              did: undefined,
-              email: undefined
+    measureDeploymentSpeed(async () => {
+      switch (action.toLowerCase()) {
+        case 'create':
+          return await createIPNS(ipnsValue)
+        case 'verify':
+          try {
+            config = await getGlobalFlashConfig()
+            ipnsValue = ipnsValue || config?.W3NameKV?.value
+          } catch (e) {
+            if (e.syscall === 'open') {
+              throw new Error('Config file is missing')
             }
-          } else {
-            console.error('No config can be found')
+            if (process.env.FLASH_W3NAME_PK) {
+              ipnsValue = ipnsValue || process.env.FLASH_W3NAME_IPNS
+              config = {
+                W3NameKV: {
+                  privKey: process.env.FLASH_W3NAME_PK,
+                  value: ''
+                },
+                did: undefined,
+                email: undefined
+              }
+            } else {
+              console.error('No config can be found')
+              process.exit(1)
+            }
+          }
+          if (!ipnsValue) {
+            console.error('No ipnsValue can be found!')
             process.exit(1)
           }
-        }
-        if (!ipnsValue) {
-          console.error('No ipnsValue can be found!')
-          process.exit(1)
-        }
-        return await verifyIPNS(config as GlobalConfig, ipnsValue)
-    }
+          return await verifyIPNS(config as GlobalConfig, ipnsValue)
+      }
+    })
   })
+
+cli
+  .command('bundlr <dir>', 'deploy app to the bundlr network')
+  
 
 cli.version(pkg.version)
 cli.help()
