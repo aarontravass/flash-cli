@@ -158,8 +158,7 @@ cli
     // precedence: options ipns > config ipns > env ipns
     switch (action.toLowerCase()) {
       case 'create':
-        await createIPNS(ipnsValue)
-        break
+        return await createIPNS(ipnsValue)
       case 'verify':
         try {
           config = await getGlobalFlashConfig()
@@ -187,8 +186,7 @@ cli
           console.error('No ipnsValue can be found!')
           process.exit(1)
         }
-        await verifyIPNS(config as GlobalConfig, ipnsValue)
-        break
+        return await verifyIPNS(config as GlobalConfig, ipnsValue)
     }
   })
 
