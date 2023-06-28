@@ -1,5 +1,5 @@
 import { CAREncoderStream, createDirectoryEncoderStream } from 'ipfs-car'
-import type { FileEntry, StorageProvider, Config } from '../types'
+import type { FileEntry, StorageProvider } from '../types'
 import { CID } from 'multiformats/cid'
 import { tmpdir } from 'node:os'
 import { readFile, open } from 'node:fs/promises'
@@ -84,7 +84,7 @@ export const uploadCARWithUCAN = async (
     }
     await updateFlashGlobalConfig(globalConfig)
   } else {
-    await client.setCurrentSpace(globalConfig.did)
+    await client.setCurrentSpace(globalConfig.did!)
   }
 
   const result = await client.uploadCAR(car)
