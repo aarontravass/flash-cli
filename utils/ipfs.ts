@@ -1,5 +1,5 @@
 import { CAREncoderStream, createDirectoryEncoderStream } from 'ipfs-car'
-import type { FileEntry, StorageProvider, Config } from '../types'
+import type { FileEntry, StorageProvider } from '../types'
 import { CID } from 'multiformats/cid'
 import { tmpdir } from 'node:os'
 import { readFile, open } from 'node:fs/promises'
@@ -24,7 +24,7 @@ export const packCAR = async (files: FileEntry[], folder: string) => {
         transform(block, controller) {
           rootCID = block.cid as CID<unknown, number, number, 1>
           controller.enqueue(block)
-        },
+        }
       })
     )
     .pipeThrough(new CAREncoderStream([placeholderCID]))
@@ -47,8 +47,8 @@ const emailPrompt = async () =>
       name: 'email',
       type: 'text',
       message: "Verify your email to confirm that you're not a bot",
-      validate: value => (!emailPattern.test(value) ? 'Invalid email' : true),
-    },
+      validate: value => emailPattern.test(value) ?? 'Invalid email'
+    }
   ])
 
 export const uploadCARWithUCAN = async (
@@ -72,7 +72,7 @@ export const uploadCARWithUCAN = async (
     await client.setCurrentSpace(did)
     try {
       await client.registerSpace(result.email, {
-        provider: `did:web:${provider}`,
+        provider: `did:web:${provider}`
       })
     } catch (err) {
       console.error('registration failed: ', err)
@@ -80,11 +80,11 @@ export const uploadCARWithUCAN = async (
 
     globalConfig = {
       email: result.email,
-      did: did,
+      did: did
     }
     await updateFlashGlobalConfig(globalConfig)
   } else {
-    await client.setCurrentSpace(globalConfig.did)
+    await client.setCurrentSpace(globalConfig.did!)
   }
 
   const result = await client.uploadCAR(car)
@@ -108,9 +108,9 @@ export const uploadCARWithApiToken = async (
       {
         method: 'POST',
         headers: {
-          Authorization: `Bearer ${token}`,
+          Authorization: `Bearer ${token}`
         },
-        body: car,
+        body: car
       }
     )
     const json = await res.json()
@@ -125,10 +125,10 @@ export const uploadCARWithApiToken = async (
       headers: {
         'Content-Type': 'application/json',
         Accept: 'application/json',
-        Authorization: `Bearer ${token}`,
+        Authorization: `Bearer ${token}`
       },
       method: 'POST',
-      body: car,
+      body: car
     })
     const json = await res.json()
     if (!res.ok) {

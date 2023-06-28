@@ -1,9 +1,7 @@
 import { exists } from './fs.js'
 import kleur from 'kleur'
-import { readTextFile } from './fs.js'
 
 const detectFramework = async () => {
-  const packageJson = JSON.parse((await readTextFile('package.json')) || '{}')
   if (await exists('_config.ts')) return 'Lume'
   else if ((await exists('.next')) || (await exists('next.config.js'))) {
     return 'Next.js'

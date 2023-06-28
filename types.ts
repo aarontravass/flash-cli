@@ -4,9 +4,11 @@ export type FileEntry = {
   stream: () => ReadableStream
 }
 
-export type DID = `did:key:${string}`
+export type DID = `did:${string}:${string}`
 
 export type Email = `${string}@${string}`
+
+export type W3NameKeyValue = { privKey: string; value: string }
 
 export type Config = {
   protocol: 'ipfs'
@@ -15,8 +17,9 @@ export type Config = {
 }
 
 export type GlobalConfig = {
-  email: Email
-  did: DID
+  email?: Email
+  did?: DID
+  W3NameKV?: W3NameKeyValue
 }
 
 export type StorageProvider =

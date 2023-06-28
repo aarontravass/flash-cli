@@ -3,7 +3,7 @@ import { dirData, fileSize } from '../utils/fs.js'
 import {
   packCAR,
   uploadCARWithUCAN,
-  uploadCARWithApiToken,
+  uploadCARWithApiToken
 } from '../utils/ipfs.js'
 import type { Config } from '../types.js'
 

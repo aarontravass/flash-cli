@@ -7,9 +7,11 @@ import kleur from 'kleur'
 import { deployToIpfs } from './api/static.js'
 import { exists, readTextFile } from './utils/fs.js'
 import { getProjectOutputs } from './utils/detect.js'
-import { Config } from './types.js'
+import { Config, GlobalConfig } from './types.js'
 import pkg from './package.json' assert { type: 'json' }
 import { measureDeploymentSpeed } from './utils/perf.js'
+import { createIPNS, verifyIPNS } from './utils/ipns.js'
+import { getGlobalFlashConfig } from './utils/flashGlobal.js'
 
 const prompt = async (options?: prompts.Options) =>
   await prompts(
@@ -21,14 +23,14 @@ const prompt = async (options?: prompts.Options) =>
         choices: [
           {
             title: 'IPFS',
-            value: 'ipfs',
+            value: 'ipfs'
           },
           {
             title: 'Arweave',
             value: 'arweave',
-            disabled: true,
-          },
-        ],
+            disabled: true
+          }
+        ]
       },
       {
         name: 'provider',
@@ -39,30 +41,30 @@ const prompt = async (options?: prompts.Options) =>
             ? [
                 {
                   title: 'nft.storage',
-                  value: 'nft.storage',
+                  value: 'nft.storage'
                 },
                 {
                   title: 'web3.storage',
-                  value: 'web3.storage',
+                  value: 'web3.storage'
                 },
                 {
                   title: 'Estuary',
-                  value: 'estuary.tech',
+                  value: 'estuary.tech'
                 },
                 {
                   title: 'Filebase (coming soon)',
                   value: 'filebase.com',
-                  disabled: true,
-                },
+                  disabled: true
+                }
               ]
             : [
                 {
                   title: 'Bundlr (coming soon)',
                   value: 'bundlr.network',
-                  disabled: true,
-                },
-              ],
-      },
+                  disabled: true
+                }
+              ]
+      }
     ],
     options
   )
@@ -78,7 +80,7 @@ cli
   .action(async (dir, options) => {
     let config: Config = {
       protocol: 'ipfs',
-      provider: 'nft.storage',
+      provider: 'nft.storage'
     }
     try {
       config = JSON.parse(await readTextFile('flash.json'))
@@ -131,8 +133,9 @@ cli
     try {
       config = JSON.parse(await readTextFile('flash.json'))
     } catch (e) {
-      if (e.syscall === 'open')
+      if (e.syscall === 'open') {
         throw new Error('Project is not initialized: flash.json is missing')
+      }
     }
     const folder = await getProjectOutputs(config.output)
     measureDeploymentSpeed(async () => {
@@ -146,6 +149,45 @@ cli
         await deployFunctions()
       }
     })
+  })
+
+cli
+  .command('ipns <action> [ipnsValue]', 'Create or Verify a IPNS key')
+  .action(async (action: string, ipnsValue?: string) => {
+    let config!: GlobalConfig | null
+    // precedence: options ipns > config ipns > env ipns
+    switch (action.toLowerCase()) {
+      case 'create':
+        return await createIPNS(ipnsValue)
+      case 'verify':
+        try {
+          config = await getGlobalFlashConfig()
+          ipnsValue = ipnsValue || config?.W3NameKV?.value
+        } catch (e) {
+          if (e.syscall === 'open') {
+            throw new Error('Config file is missing')
+          }
+          if (process.env.FLASH_W3NAME_PK) {
+            ipnsValue = ipnsValue || process.env.FLASH_W3NAME_IPNS
+            config = {
+              W3NameKV: {
+                privKey: process.env.FLASH_W3NAME_PK,
+                value: ''
+              },
+              did: undefined,
+              email: undefined
+            }
+          } else {
+            console.error('No config can be found')
+            process.exit(1)
+          }
+        }
+        if (!ipnsValue) {
+          console.error('No ipnsValue can be found!')
+          process.exit(1)
+        }
+        return await verifyIPNS(config as GlobalConfig, ipnsValue)
+    }
   })
 
 cli.version(pkg.version)
